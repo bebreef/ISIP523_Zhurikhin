@@ -93,8 +93,49 @@ class Program
                     }
                     break;
                 case "3":
+                    Console.WriteLine("Введите ID товара, которому необходима поставка");
+                    int addid = Convert.ToInt32(Console.ReadLine());
+                    Product addpr = prod.Find(p => p.ProductID == addid);
+                    if (addpr != null)
+                    {
+                        Console.WriteLine("Сколько штук товара пришло в поставке:");
+                        int supplyQuantity = Convert.ToInt32(Console.ReadLine());
+                        addpr.quantity += supplyQuantity;
+                        addpr.instock = false;
+                        if (addpr.quantity > 0)
+                        {
+                            addpr.instock = true;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Товар с таким ID не найден!");
+                    }
                     break;
                 case "4":
+                    Console.WriteLine("Введите ID товара, который был продан");
+                    int prodid = Convert.ToInt32(Console.ReadLine());
+                    Product prodpr = prod.Find(p => p.ProductID == prodid);
+                    if (prodpr != null)
+                    {
+                        Console.WriteLine("Сколько штук было продано:");
+                        int prodQuantity = Convert.ToInt32(Console.ReadLine());
+                        prodpr.quantity -= prodQuantity;
+                        if (prodpr.quantity < 0)
+                        {
+                            Console.WriteLine("КАК МОЖНО БЫЛО ПРОДАТЬ ТО, ЧЕГО НЕ СУЩЕСТВУЕТ");
+                            break;
+                        }
+                        prodpr.instock = false;
+                        if (prodpr.quantity <= 0)
+                        {
+                            prodpr.instock = true;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Товар с таким ID не найден!");
+                    }
                     break;
                 case "5":
                     Console.WriteLine("Введите название товара для поиска (или нажмите Enter для вывода всех товаров):");
