@@ -35,10 +35,10 @@ class Product
 }
 class Program
 {
+    static List<Product> prod = new List<Product>();
+    static int ID = 0;
     static void Main(string[] args)
     {
-        List<Product> prod = new List<Product>();
-        int ID = 0;
         bool cont = true;
         while (cont)
         {
@@ -56,123 +56,19 @@ class Program
             switch (choice)
             {
                 case "1":
-                    int kolvo = 0;
-                    Console.WriteLine("Сколько товаров вы хотите добавить?");
-                    kolvo = Convert.ToInt32(Console.ReadLine());
-                    for (int i = 0;i<kolvo; i++)
-                    {
-                        Console.WriteLine("Введите информацию о товаре(название, цена, количество, категория) \nПримечание к категориям: 1-еда, 2-одежда, 3-техника.");
-                        ID++;
-                        string name = Console.ReadLine();
-                        double price = Convert.ToDouble(Console.ReadLine());
-                        int quan = Convert.ToInt32(Console.ReadLine());
-                        bool instock=false;
-                        if (quan > 0)
-                        {
-                            instock = true;
-                        }
-                        int y = Convert.ToInt32(Console.ReadLine());
-                        bebebe.CategoryType cat =(bebebe.CategoryType)y;
-                        prod.Add(new Product(ID, name, price, quan, instock, cat));
-                        Console.WriteLine();
-                    }
+                    AddProduct();
                     break;
                 case "2":
-                    Console.WriteLine("Введите ID товара для удаления:");
-                    int idToDelete = Convert.ToInt32(Console.ReadLine());
-                    Product productToRemove = prod.Find(p => p.ProductID == idToDelete);
-                    if (productToRemove != null)
-                    {
-                        prod.RemoveAt(idToDelete - 1);
-                        Console.WriteLine($"Товар с ID {idToDelete} удален!");
-                        Console.WriteLine();
-                    }
-                    else
-                    {
-                        Console.WriteLine("Товар с таким ID не найден!");
-                    }
+                    DeleteProduct();
                     break;
                 case "3":
-                    Console.WriteLine("Введите ID товара, которому необходима поставка");
-                    int addid = Convert.ToInt32(Console.ReadLine());
-                    Product addpr = prod.Find(p => p.ProductID == addid);
-                    if (addpr != null)
-                    {
-                        Console.WriteLine("Сколько штук товара пришло в поставке:");
-                        int supplyQuantity = Convert.ToInt32(Console.ReadLine());
-                        addpr.quantity += supplyQuantity;
-                        addpr.instock = false;
-                        if (addpr.quantity > 0)
-                        {
-                            addpr.instock = true;
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Товар с таким ID не найден!");
-                    }
+                    SupplyProduct();
                     break;
                 case "4":
-                    Console.WriteLine("Введите ID товара, который был продан");
-                    int prodid = Convert.ToInt32(Console.ReadLine());
-                    Product prodpr = prod.Find(p => p.ProductID == prodid);
-                    if (prodpr != null)
-                    {
-                        Console.WriteLine("Сколько штук было продано:");
-                        int prodQuantity = Convert.ToInt32(Console.ReadLine());
-                        prodpr.quantity -= prodQuantity;
-                        if (prodpr.quantity < 0)
-                        {
-                            Console.WriteLine("КАК МОЖНО БЫЛО ПРОДАТЬ ТО, ЧЕГО НЕ СУЩЕСТВУЕТ");
-                            break;
-                        }
-                        prodpr.instock = false;
-                        if (prodpr.quantity <= 0)
-                        {
-                            prodpr.instock = true;
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Товар с таким ID не найден!");
-                    }
+                    SellProduct();
                     break;
                 case "5":
-                    Console.WriteLine("Введите название товара для поиска (или нажмите Enter для вывода всех товаров):");
-                    string searchName = Console.ReadLine();
-                    if (string.IsNullOrWhiteSpace(searchName))
-                    {
-                        if (prod.Count == 0)
-                        {
-                            Console.WriteLine("Список товаров пуст.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("\nВсе товары:");
-                            foreach (var product in prod)
-                            {
-                                product.PrintInfo();
-                                Console.WriteLine("---------------");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var foundProducts = prod.Where(p => p.name.Contains(searchName, StringComparison.OrdinalIgnoreCase)).ToList();
-                        if (foundProducts.Count == 0)
-                        {
-                            Console.WriteLine($"Товары с названием '{searchName}' не найдены.");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"\nРезультат Поиска:({foundProducts.Count})");
-                            foreach (var product in foundProducts)
-                            {
-                                product.PrintInfo();
-                                Console.WriteLine("---------------");
-                            }
-                        }
-                    }
+                    SearchProduct();
                     break;
                 case "0":
                     Console.WriteLine("Завершение программы");
@@ -184,6 +80,141 @@ class Program
             Console.WriteLine("Хотите вернуться в меню? (1-да, 0-нет)");
             string end = Console.ReadLine();
             cont = (end == "1");
+        }
+    }
+    static void AddProduct()
+    {
+        int kolvo = 0;
+        Console.WriteLine("Сколько товаров вы хотите добавить?");
+        kolvo = Convert.ToInt32(Console.ReadLine());
+        for (int i = 0; i < kolvo; i++)
+        {
+            Console.WriteLine("Введите информацию о товаре(название, цена, количество, категория) \nПримечание к категориям: 1-еда, 2-одежда, 3-техника.");
+            ID++;
+            string name = Console.ReadLine();
+            double price = Convert.ToDouble(Console.ReadLine());
+            int quan = Convert.ToInt32(Console.ReadLine());
+            bool instock = (quan > 0);
+            int y = Convert.ToInt32(Console.ReadLine());
+            bebebe.CategoryType cat = (bebebe.CategoryType)y;
+            prod.Add(new Product(ID, name, price, quan, instock, cat));
+            Console.WriteLine();
+        }
+    }
+
+    static void DeleteProduct()
+    {
+        Console.WriteLine("Введите ID товара для удаления:");
+        int idToDelete = Convert.ToInt32(Console.ReadLine());
+        Product productToRemove = prod.Find(p => p.ProductID == idToDelete);
+
+        if (productToRemove != null)
+        {
+            prod.Remove(productToRemove);
+            Console.WriteLine($"Товар с ID {idToDelete} удален!");
+            Console.WriteLine();
+        }
+        else
+        {
+            Console.WriteLine("Товар с таким ID не найден!");
+        }
+    }
+
+    static void SupplyProduct()
+    {
+        Console.WriteLine("Введите ID товара, которому необходима поставка");
+        int addid = Convert.ToInt32(Console.ReadLine());
+        Product addpr = prod.Find(p => p.ProductID == addid);
+
+        if (addpr != null)
+        {
+            Console.WriteLine("Сколько штук товара пришло в поставке:");
+            int supplyQuantity = Convert.ToInt32(Console.ReadLine());
+            addpr.quantity += supplyQuantity;
+
+            if (addpr.quantity > 0)
+            {
+                addpr.instock = true;
+            }
+        }
+        else
+        {
+            Console.WriteLine("Товар с таким ID не найден!");
+        }
+    }
+
+    static void SellProduct()
+    {
+        Console.WriteLine("Введите ID товара, который был продан");
+        int prodid = Convert.ToInt32(Console.ReadLine());
+        Product prodpr = prod.Find(p => p.ProductID == prodid);
+
+        if (prodpr != null)
+        {
+            Console.WriteLine("Сколько штук было продано:");
+            int prodQuantity = Convert.ToInt32(Console.ReadLine());
+
+            if (prodQuantity > prodpr.quantity)
+            {
+                Console.WriteLine("КАК МОЖНО БЫЛО ПРОДАТЬ ТО, ЧЕГО НЕ СУЩЕСТВУЕТ");
+                return;
+            }
+
+            prodpr.quantity -= prodQuantity;
+            prodpr.instock = (prodpr.quantity > 0);
+        }
+        else
+        {
+            Console.WriteLine("Товар с таким ID не найден!");
+        }
+    }
+
+    static void SearchProduct()
+    {
+        Console.WriteLine("Введите название товара для поиска (или нажмите Enter для вывода всех товаров):");
+        string searchName = Console.ReadLine();
+
+        if (string.IsNullOrWhiteSpace(searchName))
+        {
+            if (prod.Count == 0)
+            {
+                Console.WriteLine("Список товаров пуст.");
+            }
+            else
+            {
+                Console.WriteLine("\nВсе товары:");
+                foreach (Product product in prod)
+                {
+                    product.PrintInfo();
+                    Console.WriteLine("---------------");
+                }
+            }
+        }
+        else
+        {
+            List<Product> foundProducts = new List<Product>();
+
+            foreach (Product product in prod)
+            {
+                if (product.name.ToLower().Contains(searchName.ToLower()))
+                {
+                    foundProducts.Add(product);
+                }
+            }
+
+            if (foundProducts.Count == 0)
+            {
+                Console.WriteLine($"Товары с названием '{searchName}' не найдены.");
+            }
+            else
+            {
+                Console.WriteLine($"\nНайдено товаров: {foundProducts.Count}");
+                foreach (Product product in foundProducts)
+                {
+                    product.PrintInfo();
+                    Console.WriteLine("---------------");
+                }
+            }
         }
     }
 }
