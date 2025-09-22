@@ -38,6 +38,7 @@ class Program
     static void Main(string[] args)
     {
         List<Product> prod = new List<Product>();
+        int ID = 0;
         bool cont = true;
         while (cont)
         {
@@ -60,8 +61,8 @@ class Program
                     kolvo = Convert.ToInt32(Console.ReadLine());
                     for (int i = 0;i<kolvo; i++)
                     {
-                        Console.WriteLine("Введите информацию о товаре(название, цена, количество, категория) \n Примечание к категориям: 1-еда, 2-одежда, 3-техника.");
-                        int ID = i+1;
+                        Console.WriteLine("Введите информацию о товаре(название, цена, количество, категория) \nПримечание к категориям: 1-еда, 2-одежда, 3-техника.");
+                        ID++;
                         string name = Console.ReadLine();
                         double price = Convert.ToDouble(Console.ReadLine());
                         int quan = Convert.ToInt32(Console.ReadLine());
@@ -71,32 +72,66 @@ class Program
                             instock = true;
                         }
                         int y = Convert.ToInt32(Console.ReadLine());
-                        bebebe.CategoryType cat;
-                        switch (y)
-                        {
-                            case 1:
-                                cat = bebebe.CategoryType.Food;
-                                prod.Add(new Product(ID, name, price, quan, instock, cat));
-                                break;
-                            case 2:
-                                cat = bebebe.CategoryType.Clothes;
-                                prod.Add(new Product(ID, name, price, quan, instock, cat));
-                                break;
-                            case 3:
-                                cat = bebebe.CategoryType.Tech;
-                                prod.Add(new Product(ID, name, price, quan, instock, cat));
-                                break;
-                        }
+                        bebebe.CategoryType cat =(bebebe.CategoryType)y;
+                        prod.Add(new Product(ID, name, price, quan, instock, cat));
                         Console.WriteLine();
                     }
                     break;
                 case "2":
+                    Console.WriteLine("Введите ID товара для удаления:");
+                    int idToDelete = Convert.ToInt32(Console.ReadLine());
+                    Product productToRemove = prod.Find(p => p.ProductID == idToDelete);
+                    if (productToRemove != null)
+                    {
+                        prod.RemoveAt(idToDelete - 1);
+                        Console.WriteLine($"Товар с ID {idToDelete} удален!");
+                        Console.WriteLine();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Товар с таким ID не найден!");
+                    }
                     break;
                 case "3":
                     break;
                 case "4":
                     break;
                 case "5":
+                    Console.WriteLine("Введите название товара для поиска (или нажмите Enter для вывода всех товаров):");
+                    string searchName = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(searchName))
+                    {
+                        if (prod.Count == 0)
+                        {
+                            Console.WriteLine("Список товаров пуст.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nВсе товары:");
+                            foreach (var product in prod)
+                            {
+                                product.PrintInfo();
+                                Console.WriteLine("---------------");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var foundProducts = prod.Where(p => p.name.Contains(searchName, StringComparison.OrdinalIgnoreCase)).ToList();
+                        if (foundProducts.Count == 0)
+                        {
+                            Console.WriteLine($"Товары с названием '{searchName}' не найдены.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"\nРезультат Поиска:({foundProducts.Count})");
+                            foreach (var product in foundProducts)
+                            {
+                                product.PrintInfo();
+                                Console.WriteLine("---------------");
+                            }
+                        }
+                    }
                     break;
                 case "0":
                     Console.WriteLine("Завершение программы");
