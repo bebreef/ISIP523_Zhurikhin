@@ -1,5 +1,16 @@
-﻿using static System.Net.Mime.MediaTypeNames;
+﻿using System;
+using static System.Net.Mime.MediaTypeNames;
 
+
+static class bebebe
+{
+     public enum CategoryType
+    {
+        Food = 1,
+        Clothes,
+        Tech
+    }
+}
 class Product
 {
     public int ProductID;
@@ -7,17 +18,26 @@ class Product
     public double price;
     public int quantity;
     public bool instock;
-    enum category
+    public bebebe.CategoryType category; 
+    public void PrintInfo()
     {
-        Food=1,
-        Clothes,
-        Tech
+        Console.WriteLine($"ID товара: {ProductID} \nНазвание: {name} \nЦена: {price} \nКоличество: {quantity} \nНаличие: {instock} \nКатегория: {category}");
+    }
+    public Product(int ProductID, string name, double price, int quan, bool instock, bebebe.CategoryType cat)
+    {
+        this.ProductID = ProductID;
+        this.name = name;
+        this.price = price;
+        this.quantity = quan;
+        this.instock = instock;
+        this.category = cat;
     }
 }
 class Program
 {
     static void Main(string[] args)
     {
+        List<Product> prod = new List<Product>();
         bool cont = true;
         while (cont)
         {
@@ -35,6 +55,40 @@ class Program
             switch (choice)
             {
                 case "1":
+                    int kolvo = 0;
+                    Console.WriteLine("Сколько товаров вы хотите добавить?");
+                    kolvo = Convert.ToInt32(Console.ReadLine());
+                    for (int i = 0;i<kolvo; i++)
+                    {
+                        Console.WriteLine("Введите информацию о товаре(название, цена, количество, категория) \n Примечание к категориям: 1-еда, 2-одежда, 3-техника.");
+                        int ID = i+1;
+                        string name = Console.ReadLine();
+                        double price = Convert.ToDouble(Console.ReadLine());
+                        int quan = Convert.ToInt32(Console.ReadLine());
+                        bool instock=false;
+                        if (quan > 0)
+                        {
+                            instock = true;
+                        }
+                        int y = Convert.ToInt32(Console.ReadLine());
+                        bebebe.CategoryType cat;
+                        switch (y)
+                        {
+                            case 1:
+                                cat = bebebe.CategoryType.Food;
+                                prod.Add(new Product(ID, name, price, quan, instock, cat));
+                                break;
+                            case 2:
+                                cat = bebebe.CategoryType.Clothes;
+                                prod.Add(new Product(ID, name, price, quan, instock, cat));
+                                break;
+                            case 3:
+                                cat = bebebe.CategoryType.Tech;
+                                prod.Add(new Product(ID, name, price, quan, instock, cat));
+                                break;
+                        }
+                        Console.WriteLine();
+                    }
                     break;
                 case "2":
                     break;
