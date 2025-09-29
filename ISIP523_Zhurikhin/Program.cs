@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using static System.Net.Mime.MediaTypeNames;
 
 Console.WriteLine("Введите текст. (если там будет менее 100 символов...)");
 string bebebe;
@@ -16,3 +17,6 @@ for (int i = 0; i<bebebe.Length; i++)
     }
 }
 Console.WriteLine($"Всего слов в тексте: {a+1}");
+string[] words = bebebe.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+string shortw = words.OrderBy(word => word.Length).First();
+Console.WriteLine($"Самое короткое слово: '{shortw}' (длина: {shortw.Length})");
