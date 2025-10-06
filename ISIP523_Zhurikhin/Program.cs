@@ -49,6 +49,7 @@ class Program
             Console.WriteLine("3. Отсортировать книги"); // название и год
             Console.WriteLine("4. Самая дешевая и дорогая книга в коллекции");
             Console.WriteLine("5. Поиск"); //жанр, автор, название, айди
+            Console.WriteLine("6. Группировка по авторам");
             Console.WriteLine("0. Выход");
             Console.Write("Выберите пункт меню: ");
 
@@ -70,6 +71,9 @@ class Program
                     break;
                 case "5":
                     SearchProduct();
+                    break;
+                case "6":
+                    GroupByAuthor();
                     break;
                 case "0":
                     Console.WriteLine("Завершение программы");
@@ -218,6 +222,8 @@ class Program
             }
         }
     }
-}
+    static void GroupByAuthor()
+    { }
+    }
 
 
