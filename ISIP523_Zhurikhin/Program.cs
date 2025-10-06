@@ -37,8 +37,15 @@ class Book
 }
 class Program
 {
-    static List<Book> books = new List<Book>();
-    static int ID = 0;
+    static List<Book> books = new List<Book>
+    {
+        new Book(1, "Мастер и Маргарита", "М. Булгаков", bebebe.CategoryType.Fantasy, 1967, 2500.00),
+        new Book(2, "Собака Баскервилей", "А. Конан Дойл", bebebe.CategoryType.Detective, 1902, 1599.00),
+        new Book(3, "Кэрри", "С. Кинг", bebebe.CategoryType.Horror, 1974, 1875.00),
+        new Book(4, "Игра престолов", "Дж. Р. Р. Мартин", bebebe.CategoryType.Fantasy, 1996, 3500.00),
+        new Book(5, "Убийство в Восточном экспрессе", "А. Кристи", bebebe.CategoryType.Detective, 1934, 1299.00)
+    };
+    static int ID = 5;
     static void Main(string[] args)
     {
         bool cont = true;
@@ -161,33 +168,73 @@ class Program
         Console.WriteLine("Самая дешевая книга:");
         minPriceBook.PrintInfo();
     }
-    static void SellProduct()
+    static void Search()
     {
-        Console.WriteLine("Введите ID товара, который был продан");
-        int prodid = Convert.ToInt32(Console.ReadLine());
-        Product prodpr = prod.Find(p => p.ProductID == prodid);
-
-        if (prodpr != null)
+        Console.WriteLine("\nПоиск по: ");
+        Console.WriteLine("1. Названию");
+        Console.WriteLine("2. Автору");
+        Console.WriteLine("3. Жанру");
+        Console.Write("Выберите вариант: ");
+        string searchChoice = Console.ReadLine();
+        List<Book> foundBooks = new List<Book>();
+        switch (searchChoice)
         {
-            Console.WriteLine("Сколько штук было продано:");
-            int prodQuantity = Convert.ToInt32(Console.ReadLine());
-
-            if (prodQuantity > prodpr.quantity)
-            {
-                Console.WriteLine("КАК МОЖНО БЫЛО ПРОДАТЬ ТО, ЧЕГО НЕ СУЩЕСТВУЕТ");
+            case "1":
+                Console.Write("Введите часть названия: ");
+                string nameSearch = Console.ReadLine();
+                foundBooks = books.Where(b => b.name.ToLower().Contains(nameSearch.ToLower())).ToList();
+                break;
+            case "2":
+                Console.Write("Введите часть имени автора: ");
+                string authorSearch = Console.ReadLine();
+                foundBooks = books.Where(b => b.author.ToLower().Contains(authorSearch.ToLower())).ToList();
+                break;
+            case "3":
+                Console.WriteLine("Выберите жанр (1-детектив, 2-хоррор, 3 - фантастика): ");
+                if (int.TryParse(Console.ReadLine(), out int genreChoice) && Enum.IsDefined(typeof(bebebe.CategoryType), genreChoice))
+                {
+                    foundBooks = books.Where(b => b.genre == (bebebe.CategoryType)genreChoice).ToList();
+                }
+                else
+                {
+                    Console.WriteLine("Неверный выбор жанра!");
+                    return;
+                }
+                break;
+            default:
+                Console.WriteLine("Неверный выбор поиска!");
                 return;
-            }
-
-            prodpr.quantity -= prodQuantity;
-            prodpr.instock = (prodpr.quantity > 0);
         }
-        else
+
+        if (foundBooks.Count == 0)
         {
-            Console.WriteLine("Товар с таким ID не найден!");
+            Console.WriteLine("Книги не найдены.");
+            return;
+        }
+
+        Console.WriteLine($"\nНайдено книг: {foundBooks.Count}");
+        foreach (Book book in foundBooks)
+        {
+            book.PrintInfo();
         }
     }
     static void GroupByAuthor()
-    { }
+    {
+        if (books.Count == 0)
+        {
+            Console.WriteLine("Список книг пуст.");
+            return;
+        }
+
+        var groupedBooks = books.GroupBy(b => b.author)
+        .Select(g => new { Author = g.Key, Count = g.Count() })
+        .OrderBy(g => g.Author);
+        Console.WriteLine("\nКоличество книг по авторам:");
+        foreach (var group in groupedBooks)
+        {
+            Console.WriteLine($"Автор: {group.Author}, Количество книг: {group.Count}");
+        }
     }
+}
 
 
