@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using static System.Net.Mime.MediaTypeNames;
+using static System.Reflection.Metadata.BlobBuilder;
 
 
 static class bebebe
@@ -12,9 +13,9 @@ static class bebebe
         Fantasy
     }
 }
-class Product
+class Book
 {
-    public int ProductID;
+    public int BookID;
     public string name;
     public string author;
     public bebebe.CategoryType genre;
@@ -22,11 +23,11 @@ class Product
     public double price;
     public void PrintInfo()
     {
-        Console.WriteLine($"ID товара: {ProductID} \nНазвание: {name} \nЦена: {price} \nЖанр: {genre} \nАвтор: {author} \nГод выпуска: {year}");
+        Console.WriteLine($"ID товара: {BookID} \nНазвание: {name} \nЦена: {price} \nЖанр: {genre} \nАвтор: {author} \nГод выпуска: {year}");
     }
-    public Product(int ProductID, string name, string author, bebebe.CategoryType gen, int year, double price)
+    public Book(int BookID, string name, string author, bebebe.CategoryType gen, int year, double price)
     {
-        this.ProductID = ProductID;
+        this.BookID = BookID;
         this.name = name;
         this.author = author;
         this.genre = gen;
@@ -36,7 +37,7 @@ class Product
 }
 class Program
 {
-    static List<Product> prod = new List<Product>();
+    static List<Book> books = new List<Book>();
     static int ID = 0;
     static void Main(string[] args)
     {
@@ -58,19 +59,19 @@ class Program
             switch (choice)
             {
                 case "1":
-                    AddProduct();
+                    Add();
                     break;
                 case "2":
-                    DeleteProduct();
+                    Delete();
                     break;
                 case "3":
-                    SupplyProduct();
+                    Sort();
                     break;
                 case "4":
-                    SellProduct();
+                    MinMax();
                     break;
                 case "5":
-                    SearchProduct();
+                    Search();
                     break;
                 case "6":
                     GroupByAuthor();
@@ -87,7 +88,7 @@ class Program
             cont = (end == "1");
         }
     }
-    static void AddProduct()
+    static void Add()
     {
         int kolvo = 0;
         Console.WriteLine("Сколько книг вы хотите добавить?");
@@ -102,20 +103,20 @@ class Program
             bebebe.CategoryType gen = (bebebe.CategoryType)y;
             int year = Convert.ToInt32(Console.ReadLine());
             double price = Convert.ToDouble(Console.ReadLine());
-            prod.Add(new Product(ID, name, author, gen, year, price));
+            books.Add(new Book(ID, name, author, gen, year, price));
             Console.WriteLine();
         }
     }
 
-    static void DeleteProduct()
+    static void Delete()
     {
         Console.WriteLine("Введите ID книги для удаления:");
         int idToDelete = Convert.ToInt32(Console.ReadLine());
-        Product productToRemove = prod.Find(p => p.ProductID == idToDelete);
+        Book productToRemove = books.Find(p => p.BookID == idToDelete);
 
         if (productToRemove != null)
         {
-            prod.Remove(productToRemove);
+            books.Remove(productToRemove);
             Console.WriteLine($"Книга с ID {idToDelete} удалена!");
             Console.WriteLine();
         }
@@ -124,30 +125,42 @@ class Program
             Console.WriteLine("Книга с таким ID не найдена!");
         }
     }
-
-    static void SupplyProduct()
+    static void Sort()
     {
-        Console.WriteLine("Введите ID товара, которому необходима поставка");
-        int addid = Convert.ToInt32(Console.ReadLine());
-        Product addpr = prod.Find(p => p.ProductID == addid);
-
-        if (addpr != null)
+        Console.WriteLine("\nСортировать по: ");
+        Console.WriteLine("1. Названию");
+        Console.WriteLine("2. Году издания");
+        Console.Write("Выберите вариант: ");
+        string sortChoice = Console.ReadLine();
+        List<Book> sortedBooks = books;
+        switch (sortChoice)
         {
-            Console.WriteLine("Сколько штук товара пришло в поставке:");
-            int supplyQuantity = Convert.ToInt32(Console.ReadLine());
-            addpr.quantity += supplyQuantity;
-
-            if (addpr.quantity > 0)
-            {
-                addpr.instock = true;
-            }
+            case "1":
+                sortedBooks = books.OrderBy(b => b.name).ToList();
+                Console.WriteLine("\nКниги, отсортированные по названию:");
+                break;
+            case "2":
+                sortedBooks = books.OrderBy(b => b.year).ToList();
+                Console.WriteLine("\nКниги, отсортированные по году издания:");
+                break;
+            default:
+                Console.WriteLine("Неверный выбор сортировки!");
+                return;
         }
-        else
+        foreach (Book book in sortedBooks)
         {
-            Console.WriteLine("Товар с таким ID не найден!");
+            book.PrintInfo();
         }
     }
-
+    static void MinMax()
+    {
+        var maxPriceBook = books.OrderByDescending(b => b.price).First();
+        var minPriceBook = books.OrderBy(b => b.price).First();
+        Console.WriteLine("\nСамая дорогая книга:");
+        maxPriceBook.PrintInfo();
+        Console.WriteLine("Самая дешевая книга:");
+        minPriceBook.PrintInfo();
+    }
     static void SellProduct()
     {
         Console.WriteLine("Введите ID товара, который был продан");
@@ -171,55 +184,6 @@ class Program
         else
         {
             Console.WriteLine("Товар с таким ID не найден!");
-        }
-    }
-
-    static void SearchProduct()
-    {
-        Console.WriteLine("Введите название товара для поиска (или нажмите Enter для вывода всех товаров):");
-        string searchName = Console.ReadLine();
-
-        if (string.IsNullOrWhiteSpace(searchName))
-        {
-            if (prod.Count == 0)
-            {
-                Console.WriteLine("Список товаров пуст.");
-            }
-            else
-            {
-                Console.WriteLine("\nВсе товары:");
-                foreach (Product product in prod)
-                {
-                    product.PrintInfo();
-                    Console.WriteLine("---------------");
-                }
-            }
-        }
-        else
-        {
-            List<Product> foundProducts = new List<Product>();
-
-            foreach (Product product in prod)
-            {
-                if (product.name.ToLower().Contains(searchName.ToLower()))
-                {
-                    foundProducts.Add(product);
-                }
-            }
-
-            if (foundProducts.Count == 0)
-            {
-                Console.WriteLine($"Товары с названием '{searchName}' не найдены.");
-            }
-            else
-            {
-                Console.WriteLine($"\nНайдено товаров: {foundProducts.Count}");
-                foreach (Product product in foundProducts)
-                {
-                    product.PrintInfo();
-                    Console.WriteLine("---------------");
-                }
-            }
         }
     }
     static void GroupByAuthor()
