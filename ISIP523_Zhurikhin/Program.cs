@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using static System.Net.Mime.MediaTypeNames;
 
 
@@ -6,31 +7,31 @@ static class bebebe
 {
     public enum CategoryType
     {
-        Food = 1,
-        Clothes,
-        Tech
+        Detective = 1,
+        Horror,
+        Fantasy
     }
 }
 class Product
 {
     public int ProductID;
     public string name;
+    public string author;
+    public bebebe.CategoryType genre;
+    public int year;
     public double price;
-    public int quantity;
-    public bool instock;
-    public bebebe.CategoryType category;
     public void PrintInfo()
     {
-        Console.WriteLine($"ID товара: {ProductID} \nНазвание: {name} \nЦена: {price} \nКоличество: {quantity} \nНаличие: {instock} \nКатегория: {category}");
+        Console.WriteLine($"ID товара: {ProductID} \nНазвание: {name} \nЦена: {price} \nЖанр: {genre} \nАвтор: {author} \nГод выпуска: {year}");
     }
-    public Product(int ProductID, string name, double price, int quan, bool instock, bebebe.CategoryType cat)
+    public Product(int ProductID, string name, string author, bebebe.CategoryType gen, int year, double price)
     {
         this.ProductID = ProductID;
         this.name = name;
+        this.author = author;
+        this.genre = gen;
+        this.year = year;
         this.price = price;
-        this.quantity = quan;
-        this.instock = instock;
-        this.category = cat;
     }
 }
 class Program
@@ -43,11 +44,11 @@ class Program
         while (cont)
         {
             Console.WriteLine("\n=== МЕНЮ ===");
-            Console.WriteLine("1. Добавить товар");
-            Console.WriteLine("2. Удалить товар");
-            Console.WriteLine("3. Заказать поставку товара");
-            Console.WriteLine("4. Продать товар");
-            Console.WriteLine("5. Поиск по названию");
+            Console.WriteLine("1. Добавить книгу");
+            Console.WriteLine("2. Удалить книгу");
+            Console.WriteLine("3. Отсортировать книги"); // название и год
+            Console.WriteLine("4. Самая дешевая и дорогая книга в коллекции");
+            Console.WriteLine("5. Поиск"); //жанр, автор, название, айди
             Console.WriteLine("0. Выход");
             Console.Write("Выберите пункт меню: ");
 
@@ -85,38 +86,38 @@ class Program
     static void AddProduct()
     {
         int kolvo = 0;
-        Console.WriteLine("Сколько товаров вы хотите добавить?");
+        Console.WriteLine("Сколько книг вы хотите добавить?");
         kolvo = Convert.ToInt32(Console.ReadLine());
         for (int i = 0; i < kolvo; i++)
         {
-            Console.WriteLine("Введите информацию о товаре(название, цена, количество, категория) \nПримечание к категориям: 1-еда, 2-одежда, 3-техника.");
+            Console.WriteLine("Введите информацию о книге(название, автор, жанр, год выпуска, цена) \nПримечание к жанру: 1-детектив, 2-страшилка пугалка, 3-фантастика.");
             ID++;
             string name = Console.ReadLine();
-            double price = Convert.ToDouble(Console.ReadLine());
-            int quan = Convert.ToInt32(Console.ReadLine());
-            bool instock = (quan > 0);
+            string author = Console.ReadLine();
             int y = Convert.ToInt32(Console.ReadLine());
-            bebebe.CategoryType cat = (bebebe.CategoryType)y;
-            prod.Add(new Product(ID, name, price, quan, instock, cat));
+            bebebe.CategoryType gen = (bebebe.CategoryType)y;
+            int year = Convert.ToInt32(Console.ReadLine());
+            double price = Convert.ToDouble(Console.ReadLine());
+            prod.Add(new Product(ID, name, author, gen, year, price));
             Console.WriteLine();
         }
     }
 
     static void DeleteProduct()
     {
-        Console.WriteLine("Введите ID товара для удаления:");
+        Console.WriteLine("Введите ID книги для удаления:");
         int idToDelete = Convert.ToInt32(Console.ReadLine());
         Product productToRemove = prod.Find(p => p.ProductID == idToDelete);
 
         if (productToRemove != null)
         {
             prod.Remove(productToRemove);
-            Console.WriteLine($"Товар с ID {idToDelete} удален!");
+            Console.WriteLine($"Книга с ID {idToDelete} удалена!");
             Console.WriteLine();
         }
         else
         {
-            Console.WriteLine("Товар с таким ID не найден!");
+            Console.WriteLine("Книга с таким ID не найдена!");
         }
     }
 
