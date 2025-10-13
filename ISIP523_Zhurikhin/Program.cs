@@ -74,11 +74,13 @@ class Teacher : Person
 }
 class Program
 {
-
+    static List<Student> students = new List<Student>();
+    static List<Teacher> teachers = new List<Teacher>();
+    static int ID = 4;
     static void Main(string[] args)
     {
      Student student1 = new Student(
-    id: 1001,
+    id: 1,
     fio: "Иванов Иван Иванович",
     birthday: new DateOnly(2003, 5, 15),
     gender: "Мужской",
@@ -87,7 +89,7 @@ class Program
     course: new cat[] {(cat)1}
     );
     Student student2 = new Student(
-    id: 1002,
+    id: 2,
     fio: "Петрова Анна Сергеевна",
     birthday: new DateOnly(2002, 8, 22),
     gender: "Женский",
@@ -96,7 +98,7 @@ class Program
     course: new cat[] { (cat)2, (cat)3 }
     );
     Student student3 = new Student(
-    id: 1003,
+    id: 3,
     fio: "Сидоров Алексей Петрович",
     birthday: new DateOnly(2004, 1, 10),
     gender: "Мужской",
@@ -125,6 +127,46 @@ class Program
     subject: (cat)2,
     PCExperience: 8
     );
+        bool cont = true;
+        while (cont)
+        {
+            Console.WriteLine("\n=== МЕНЮ ===");
+            Console.WriteLine("1. Добавить cтудента");
+            Console.WriteLine("2. Добавить преподавателя");
+            Console.WriteLine("3. Добавить курс"); 
+            Console.WriteLine("4. Вывод информации по студентам");
+            Console.WriteLine("5. Вывод информации по преподавателям"); 
+            Console.WriteLine("6. Вывод информации по курсам");
+            Console.WriteLine("0. Выход");
+            Console.Write("Выберите пункт меню: ");
+
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    break;
+                case "2":
+                    break;
+                case "3":
+                    break;
+                case "4":
+                    break;
+                case "5":
+                    break;
+                case "6":
+                    break;
+                case "0":
+                    Console.WriteLine("Завершение программы");
+                    return;
+                default:
+                    Console.WriteLine("Неверный выбор");
+                    break;
+            }
+            Console.WriteLine("Хотите вернуться в меню? (1-да, 0-нет)");
+            string end = Console.ReadLine();
+            cont = (end == "1");
+        }
     }
 }
 
