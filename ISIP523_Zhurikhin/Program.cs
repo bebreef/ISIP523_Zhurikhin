@@ -25,19 +25,16 @@ class Person
     private string FIO;
     private DateOnly Birthday;
     private string Gender;
-
     public Person(string fio, DateOnly birthday, string gender)
     {
         FIO = fio;
         Birthday = birthday;
         Gender = gender;
     }
-
     public virtual void Print()
     {
         Console.WriteLine($"ФИО: {FIO}\nДата рождения: {Birthday}\nПол: {Gender}");
     }
-
     public string GetFIO() => FIO;
     public DateOnly GetBirthday() => Birthday;
     public string GetGender() => Gender;
@@ -94,7 +91,6 @@ class Student : Person
             Console.WriteLine($"Студент {GetFIO()} уже записан на курс '{course.Name}'");
         }
     }
-
     public int GetStudentNumberID() => StudentNumberID;
     public bool GetPCExperience() => PCExperience;
     public List<Course> GetCourses() => courses;
@@ -105,21 +101,18 @@ class Teacher : Person
 {
     private Course Subject;
     private int ExperienceYears;
-
     public Teacher(string fio, DateOnly birthday, string gender, Course subject, int experienceYears)
         : base(fio, birthday, gender)
     {
         Subject = subject;
         ExperienceYears = experienceYears;
     }
-
     public override void Print()
     {
         Console.WriteLine("=== ПРЕПОДАВАТЕЛЬ ===");
         base.Print();
         Console.WriteLine($"Предмет: {Subject.Name}\nСтаж работы: {ExperienceYears} лет\n");
     }
-
     public Course GetSubject() => Subject;
     public int GetExperienceYears() => ExperienceYears;
 }
@@ -132,7 +125,6 @@ class Program
     static int studentID = 3;
     static int teacherID = 3;
     static int courseID = 3;
-
     static void Main(string[] args)
     {
         InitializeData();
@@ -149,9 +141,7 @@ class Program
             Console.WriteLine("7. Добавить курс к студенту");
             Console.WriteLine("0. Выход");
             Console.Write("Выберите пункт меню: ");
-
             string choice = Console.ReadLine();
-
             switch (choice)
             {
                 case "1":
@@ -349,6 +339,115 @@ class Program
         Teacher newTeacher = new Teacher(fio, birthday, gender, subject, experience);
         teachers.Add(newTeacher);
         Console.WriteLine($"\nПреподаватель {fio} успешно добавлен!");
+    }
+    static void AddCourse()
+    {
+        Console.WriteLine("\n=== Добавление курса ===");
+        courseID++;
+
+        Console.Write("Введите название курса: ");
+        string name = Console.ReadLine();
+
+        Console.Write("Введите описание курса: ");
+        string description = Console.ReadLine();
+
+        Course newCourse = new Course(courseID, name, description);
+        courses.Add(newCourse);
+
+        Console.WriteLine($"\nКурс '{name}' успешно добавлен с ID: {courseID}!");
+    }
+
+    static void PrintStudentsInfo()
+    {
+        Console.WriteLine("\n=== ИНФОРМАЦИЯ О СТУДЕНТАХ ===");
+        if (students.Count == 0)
+        {
+            Console.WriteLine("Студентов нет.");
+            return;
+        }
+
+        foreach (var student in students)
+        {
+            student.Print();
+        }
+    }
+
+    static void PrintTeachersInfo()
+    {
+        Console.WriteLine("\n=== ИНФОРМАЦИЯ О ПРЕПОДАВАТЕЛЯХ ===");
+        if (teachers.Count == 0)
+        {
+            Console.WriteLine("Преподавателей нет.");
+            return;
+        }
+
+        foreach (var teacher in teachers)
+        {
+            teacher.Print();
+        }
+    }
+
+    static void PrintCoursesInfo()
+    {
+        Console.WriteLine("\n=== ИНФОРМАЦИЯ О КУРСАХ ===");
+        if (courses.Count == 0)
+        {
+            Console.WriteLine("Курсов нет.");
+            return;
+        }
+
+        foreach (var course in courses)
+        {
+            Console.WriteLine($"ID: {course.Id}, Название: {course.Name}, Описание: {course.Description}");
+        }
+    }
+
+    static void AddCourseToStudent()
+    {
+        Console.WriteLine("\n=== ДОБАВЛЕНИЕ КУРСА СТУДЕНТУ ===");
+
+        if (students.Count == 0)
+        {
+            Console.WriteLine("Нет доступных студентов.");
+            return;
+        }
+
+        if (courses.Count == 0)
+        {
+            Console.WriteLine("Нет доступных курсов.");
+            return;
+        }
+
+        Console.WriteLine("Список студентов:");
+        foreach (var student in students)
+        {
+            Console.WriteLine($"ID: {student.GetStudentNumberID()}, ФИО: {student.GetFIO()}");
+        }
+
+        Console.Write("Введите ID студента: ");
+        int studentId = int.Parse(Console.ReadLine());
+        Student selectedStudent = students.FirstOrDefault(s => s.GetStudentNumberID() == studentId);
+
+        if (selectedStudent == null)
+        {
+            Console.WriteLine("Студент с таким ID не найден!");
+            return;
+        }
+
+        Console.WriteLine("\nДоступные курсы:");
+        PrintCoursesInfo();
+
+        Console.Write("Введите ID курса для добавления: ");
+        int courseId = int.Parse(Console.ReadLine());
+        Course selectedCourse = courses.FirstOrDefault(c => c.Id == courseId);
+
+        if (selectedCourse == null)
+        {
+            Console.WriteLine("Курс с таким ID не найден!");
+            return;
+        }
+
+        selectedStudent.AddCourse(selectedCourse);
     }
 }
 
