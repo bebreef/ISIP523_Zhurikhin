@@ -79,5 +79,85 @@ class StaminaPotion
     public string name;
     public int staminaamount;
 }
-
+class Enemy : BaseEntity
+{
+    public int attack;
+    public int defense;
+    public virtual void AttackPlayer(Player player, Random rng)
+    {
+        int damage = attack;
+        if (player.isDefending && rng.NextDouble() < 0.4)
+        {
+            Console.WriteLine($"{player.Name} уклоняется от атаки!");
+        }
+        else
+        {
+            damage = Math.Max(0, damage - player.equippedarmor.Defense);
+            player.HP -= damage;
+            Console.WriteLine($"{Name} наносит {damage} урон(а) {player.Name}!");
+        }
+    }
+}
+class Goblin : Enemy
+{
+    public double CritChance = 0.2;
+    public override void AttackPlayer(Player player, Random rng)
+    {
+        int damage = attack;
+        if (rng.NextDouble() < CritChance)
+        {
+            damage *= 2;
+            Console.WriteLine($"{Name} наносит критический удар!"); 
+        }
+        if (player.isDefending && rng.NextDouble() < 0.4)
+        {
+            Console.WriteLine($"{player.Name} уклоняется от атаки!");
+        }
+        else
+        {
+            damage = Math.Max(0, damage - player.equippedarmor.Defense);
+            player.HP -= damage;
+            Console.WriteLine($"{Name} наносит {damage} урон(а) {player.Name}!");
+        }
+    }
+}
+class Skeleton : Enemy
+{
+    public override void AttackPlayer(Player player, Random rng)
+    {
+        int damage = attack;
+        if (player.isDefending && rng.NextDouble() < 0.4)
+        {
+            Console.WriteLine($"{player.Name} уклоняется от атаки!");
+        }
+        else
+        {
+            player.HP -= damage;
+            Console.WriteLine($"{Name} наносит {damage} урон(а) {player.Name}!");
+        }
+    }
+}
+class Mage : Enemy
+{
+    public double FreezeChance = 0.15;
+    public override void AttackPlayer(Player player, Random rng)
+    {
+        if (rng.NextDouble() < FreezeChance)
+        {
+            player.isFrozen = true;
+            Console.WriteLine($"{Name} замораживет {player.Name}! Пропуск хода!");
+        }
+        int damage = attack;    
+        if (player.isDefending && rng.NextDouble() < 0.4)
+        {
+            Console.WriteLine($"{player.Name} уклоняется от атаки!");
+        }
+        else
+        {
+            damage = Math.Max(0, damage - player.equippedarmor.Defense);
+            player.HP -= damage;
+            Console.WriteLine($"{Name} наносит {damage} урон(а) {player.Name}!");
+        }
+    }
+}
 
