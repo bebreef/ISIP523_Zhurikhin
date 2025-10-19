@@ -10,11 +10,11 @@ class Player : BaseEntity
 {
     public int Stamina;
     public int MaxStamina = 10;
-    public weapon equippedweapon;
-    public armor equippedarmor;
+    public Weapon equippedweapon;
+    public Armor equippedarmor;
     public bool isFrozen;
     public bool isDefending;
-    public Player(string name, int health, weapon startweapon, armor startarmor)
+    public Player(string name, int health, Weapon startweapon, Armor startarmor)
     {
         Name = name;
         HP = health;
@@ -92,7 +92,7 @@ class Enemy : BaseEntity
         }
         else
         {
-            damage = Math.Max(0, damage - player.equippedarmor.Defense);
+            damage = Math.Max(0, damage - player.equippedarmor.defense);
             player.HP -= damage;
             Console.WriteLine($"{Name} наносит {damage} урон(а) {player.Name}!");
         }
@@ -100,7 +100,16 @@ class Enemy : BaseEntity
 }
 class Goblin : Enemy
 {
-    public double CritChance = 0.2;
+    public double CritChance;
+    public Goblin()
+    {
+        Name = "Гоблин";
+        MaxHP = 40;
+        HP = MaxHP;
+        attack = 10;
+        defense = 3;
+        CritChance = 0.2;
+    }
     public override void AttackPlayer(Player player, Random rng)
     {
         int damage = attack;
@@ -115,7 +124,7 @@ class Goblin : Enemy
         }
         else
         {
-            damage = Math.Max(0, damage - player.equippedarmor.Defense);
+            damage = Math.Max(0, damage - player.equippedarmor.defense);
             player.HP -= damage;
             Console.WriteLine($"{Name} наносит {damage} урон(а) {player.Name}!");
         }
@@ -123,6 +132,16 @@ class Goblin : Enemy
 }
 class Skeleton : Enemy
 {
+    public double FreezeChance; 
+    public Skeleton()
+    {
+        Name = "Skeleton";
+        MaxHP = 60;
+        HP = MaxHP;
+        attack = 8;
+        defense = 5;
+        FreezeChance = 0.0; 
+    }
     public override void AttackPlayer(Player player, Random rng)
     {
         int damage = attack;
@@ -133,13 +152,22 @@ class Skeleton : Enemy
         else
         {
             player.HP -= damage;
-            Console.WriteLine($"{Name} наносит {damage} урон(а) {player.Name}!");
+            Console.WriteLine($"{Name} игнорирует броню и наносит {damage} урона {player.Name}!");
         }
     }
 }
 class Mage : Enemy
 {
-    public double FreezeChance = 0.15;
+    public double FreezeChance;
+    public Mage()
+    {
+        Name = "Mage";
+        MaxHP = 30;
+        HP = MaxHP;
+        attack = 6;
+        defense = 7;
+        FreezeChance = 0.15;
+    }
     public override void AttackPlayer(Player player, Random rng)
     {
         if (rng.NextDouble() < FreezeChance)
@@ -154,10 +182,82 @@ class Mage : Enemy
         }
         else
         {
-            damage = Math.Max(0, damage - player.equippedarmor.Defense);
+            damage = Math.Max(0, damage - player.equippedarmor.defense);
             player.HP -= damage;
             Console.WriteLine($"{Name} наносит {damage} урон(а) {player.Name}!");
         }
     }
 }
+class VVG : Goblin
+{
+    public VVG()
+    {
+        Name = "ВВГ";
+        MaxHP = (int)Math.Round(40 * 2.0); 
+        HP = MaxHP;
+        attack = (int)Math.Round(10 * 1.5); 
+        defense = (int)Math.Round(3 * 1.2); 
+        CritChance = 0.2 + 0.1;
+    }
+}
+class Kovalsky : Skeleton
+{
+    public Kovalsky()
+    {
+        Name = "Ковальский";
+        MaxHP = (int)Math.Round(60 * 2.5); 
+        HP = MaxHP;
+        attack = (int)Math.Round(8 * 1.3); 
+        defense = (int)Math.Round(5 * 1.4);
+        FreezeChance = 0.0; 
+    }
+}
 
+class Archmage : Mage
+{
+    public Archmage()
+    {
+        Name = "Архимаг C++";
+        MaxHP = (int)Math.Round(30 * 1.8); 
+        HP = MaxHP;
+        attack = (int)Math.Round(6 * 1.6); 
+        defense = (int)Math.Round(7 * 1.1); 
+        FreezeChance = 0.15 + 0.1; 
+    }
+}
+
+class Pestov : Skeleton
+{
+    public Pestov()
+    {
+        Name = "Пестов C--";
+        MaxHP = (int)Math.Round(60 * 1.3); 
+        HP = MaxHP;
+        attack = (int)Math.Round(8 * 1.8); 
+        defense = (int)Math.Round(5 * 0.6);
+        FreezeChance = 0.15 + 0.15; 
+    }
+
+    public override void AttackPlayer(Player player, Random rng)
+    {
+        if (rng.NextDouble() < FreezeChance)
+        {
+            player.isFrozen = true;
+            Console.WriteLine($"{Name} замораживает {player.Name}! Пропуск хода!");
+        }
+        int damage = attack;
+        if (player.isDefending && rng.NextDouble() < 0.4)
+        {
+            Console.WriteLine($"{player.Name} уклоняется от атаки!");
+        }
+        else
+        {
+            player.HP -= damage;
+            Console.WriteLine($"{Name} игнорирует броню и наносит {damage} урона {player.Name}!");
+        }
+    }
+}
+class Game
+{
+
+}
