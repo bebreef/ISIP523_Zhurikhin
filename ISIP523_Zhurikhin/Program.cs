@@ -280,8 +280,8 @@ class Game
         string armorChoice = Console.ReadLine();
         Armor startArmor = armorChoice switch
         {
-            "1" => new Armor { name = "Тяжелая Броня", defense = 3, bufftype = "Меч" },
-            "2" => new Armor { name = "Средняя Броня", defense = 2, bufftype = "Клеймор" },
+            "1" => new Armor { name = "Тяжелая Броня", defense = 1, bufftype = "Меч" },
+            "2" => new Armor { name = "Средняя Броня", defense = 1, bufftype = "Клеймор" },
             "3" => new Armor { name = "Легкая Броня", defense = 1, bufftype = "Топор" },
         };
         player = new Player(name, 20, startWeapon, startArmor);
@@ -360,6 +360,7 @@ class Game
                         damage += 1; 
                     enemy.HP -= damage;
                     Console.WriteLine($"{player.Name} атакует с помощью {player.equippedweapon.name} и наносит {damage} урона!");
+                    Console.WriteLine($"-------------------------------------");
                 }
                 else if (choice == "1")
                 {
@@ -378,7 +379,10 @@ class Game
             }
             if (enemy.isAlive)
                 enemy.AttackPlayer(player, rng);
+            if (!enemy.isAlive)
+                OpenChest();
         }
+
     }
     private void OpenChest()
     {
