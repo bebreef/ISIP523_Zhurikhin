@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="7ff0c57973484f398792ef2678f6cc3e" Name="Diagram1">
+        <EntityTypeShape EntityType="PR7Model.Orders" Width="1.5" PointX="3" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="PR7Model.Parts" Width="1.5" PointX="0.75" PointY="4.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="PR7Model.Players" Width="1.5" PointX="0.75" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="PR7Model.PurchaseOrders" Width="1.5" PointX="6" PointY="4.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="PR7Model.Storage" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
+        <AssociationConnector Association="PR7Model.FK__Orders__BrokenPa__4CA06362" ManuallyRouted="false" />
+        <AssociationConnector Association="PR7Model.FK__Orders__Installe__4D94879B" ManuallyRouted="false" />
+        <AssociationConnector Association="PR7Model.FK__Orders__PlayerID__4BAC3F29" ManuallyRouted="false" />
+        <AssociationConnector Association="PR7Model.FK__PurchaseO__PartI__47DBAE45" ManuallyRouted="false" />
+        <AssociationConnector Association="PR7Model.FK__Storage__PartID__403A8C7D" ManuallyRouted="false" />
+        <AssociationConnector Association="PR7Model.FK__PurchaseO__Playe__46E78A0C" ManuallyRouted="false" />
+        <AssociationConnector Association="PR7Model.FK__Storage__PlayerI__3F466844" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

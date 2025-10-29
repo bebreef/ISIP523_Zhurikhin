@@ -1,0 +1,461 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="Хранилище PR7Model" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Orders">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PlayerID" Type="int" Nullable="false" />
+          <Property Name="ClientName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="CarModel" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="BrokenPartID" Type="int" Nullable="false" />
+          <Property Name="InstalledPartID" Type="int" />
+          <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="RepairPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="FinePrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="OrderDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Parts">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="PurchasePrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="RepairPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Players">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Balance" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="TotalRepairs" Type="int" />
+          <Property Name="TotalFines" Type="int" />
+        </EntityType>
+        <EntityType Name="PurchaseOrders">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PlayerID" Type="int" Nullable="false" />
+          <Property Name="PartID" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="DeliveryAfter" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Storage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PlayerID" Type="int" Nullable="false" />
+          <Property Name="PartID" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__Orders__BrokenPa__4CA06362">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="BrokenPartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Orders__Installe__4D94879B">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="0..1" />
+          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="InstalledPartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Orders__PlayerID__4BAC3F29">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PurchaseO__PartI__47DBAE45">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="PurchaseOrders" Type="Self.PurchaseOrders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PurchaseOrders">
+              <PropertyRef Name="PartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PurchaseO__Playe__46E78A0C">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="PurchaseOrders" Type="Self.PurchaseOrders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PurchaseOrders">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Storage__PartID__403A8C7D">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="Storage" Type="Self.Storage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Storage">
+              <PropertyRef Name="PartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Storage__PlayerI__3F466844">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="Storage" Type="Self.Storage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Storage">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Хранилище PR7ModelContainer">
+          <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Parts" EntityType="Self.Parts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Players" EntityType="Self.Players" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseOrders" EntityType="Self.PurchaseOrders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Storage" EntityType="Self.Storage" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Orders__BrokenPa__4CA06362" Association="Self.FK__Orders__BrokenPa__4CA06362">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Orders__Installe__4D94879B" Association="Self.FK__Orders__Installe__4D94879B">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Orders__PlayerID__4BAC3F29" Association="Self.FK__Orders__PlayerID__4BAC3F29">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PurchaseO__PartI__47DBAE45" Association="Self.FK__PurchaseO__PartI__47DBAE45">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="PurchaseOrders" EntitySet="PurchaseOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PurchaseO__Playe__46E78A0C" Association="Self.FK__PurchaseO__Playe__46E78A0C">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="PurchaseOrders" EntitySet="PurchaseOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Storage__PartID__403A8C7D" Association="Self.FK__Storage__PartID__403A8C7D">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="Storage" EntitySet="Storage" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Storage__PlayerI__3F466844" Association="Self.FK__Storage__PlayerI__3F466844">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="Storage" EntitySet="Storage" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="PR7Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Orders">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PlayerID" Type="Int32" Nullable="false" />
+          <Property Name="ClientName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CarModel" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BrokenPartID" Type="Int32" Nullable="false" />
+          <Property Name="InstalledPartID" Type="Int32" />
+          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RepairPrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="FinePrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="OrderDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Parts" Relationship="Self.FK__Orders__BrokenPa__4CA06362" FromRole="Orders" ToRole="Parts" />
+          <NavigationProperty Name="Parts1" Relationship="Self.FK__Orders__Installe__4D94879B" FromRole="Orders" ToRole="Parts" />
+          <NavigationProperty Name="Players" Relationship="Self.FK__Orders__PlayerID__4BAC3F29" FromRole="Orders" ToRole="Players" />
+        </EntityType>
+        <EntityType Name="Parts">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PurchasePrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="RepairPrice" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <NavigationProperty Name="Orders" Relationship="Self.FK__Orders__BrokenPa__4CA06362" FromRole="Parts" ToRole="Orders" />
+          <NavigationProperty Name="Orders1" Relationship="Self.FK__Orders__Installe__4D94879B" FromRole="Parts" ToRole="Orders" />
+          <NavigationProperty Name="PurchaseOrders" Relationship="Self.FK__PurchaseO__PartI__47DBAE45" FromRole="Parts" ToRole="PurchaseOrders" />
+          <NavigationProperty Name="Storage" Relationship="Self.FK__Storage__PartID__403A8C7D" FromRole="Parts" ToRole="Storage" />
+        </EntityType>
+        <EntityType Name="Players">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Balance" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="TotalRepairs" Type="Int32" />
+          <Property Name="TotalFines" Type="Int32" />
+          <NavigationProperty Name="Orders" Relationship="Self.FK__Orders__PlayerID__4BAC3F29" FromRole="Players" ToRole="Orders" />
+          <NavigationProperty Name="PurchaseOrders" Relationship="Self.FK__PurchaseO__Playe__46E78A0C" FromRole="Players" ToRole="PurchaseOrders" />
+          <NavigationProperty Name="Storage" Relationship="Self.FK__Storage__PlayerI__3F466844" FromRole="Players" ToRole="Storage" />
+        </EntityType>
+        <EntityType Name="PurchaseOrders">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PlayerID" Type="Int32" Nullable="false" />
+          <Property Name="PartID" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="DeliveryAfter" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Parts" Relationship="Self.FK__PurchaseO__PartI__47DBAE45" FromRole="PurchaseOrders" ToRole="Parts" />
+          <NavigationProperty Name="Players" Relationship="Self.FK__PurchaseO__Playe__46E78A0C" FromRole="PurchaseOrders" ToRole="Players" />
+        </EntityType>
+        <EntityType Name="Storage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PlayerID" Type="Int32" Nullable="false" />
+          <Property Name="PartID" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Parts" Relationship="Self.FK__Storage__PartID__403A8C7D" FromRole="Storage" ToRole="Parts" />
+          <NavigationProperty Name="Players" Relationship="Self.FK__Storage__PlayerI__3F466844" FromRole="Storage" ToRole="Players" />
+        </EntityType>
+        <Association Name="FK__Orders__BrokenPa__4CA06362">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="BrokenPartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Orders__Installe__4D94879B">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="0..1" />
+          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="InstalledPartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Orders__PlayerID__4BAC3F29">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PurchaseO__PartI__47DBAE45">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="PurchaseOrders" Type="Self.PurchaseOrders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PurchaseOrders">
+              <PropertyRef Name="PartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Storage__PartID__403A8C7D">
+          <End Role="Parts" Type="Self.Parts" Multiplicity="1" />
+          <End Role="Storage" Type="Self.Storage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Storage">
+              <PropertyRef Name="PartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PurchaseO__Playe__46E78A0C">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="PurchaseOrders" Type="Self.PurchaseOrders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="PurchaseOrders">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Storage__PlayerI__3F466844">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="Storage" Type="Self.Storage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Storage">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="PR7Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Orders" EntityType="Self.Orders" />
+          <EntitySet Name="Parts" EntityType="Self.Parts" />
+          <EntitySet Name="Players" EntityType="Self.Players" />
+          <EntitySet Name="PurchaseOrders" EntityType="Self.PurchaseOrders" />
+          <EntitySet Name="Storage" EntityType="Self.Storage" />
+          <AssociationSet Name="FK__Orders__BrokenPa__4CA06362" Association="Self.FK__Orders__BrokenPa__4CA06362">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Orders__Installe__4D94879B" Association="Self.FK__Orders__Installe__4D94879B">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Orders__PlayerID__4BAC3F29" Association="Self.FK__Orders__PlayerID__4BAC3F29">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PurchaseO__PartI__47DBAE45" Association="Self.FK__PurchaseO__PartI__47DBAE45">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="PurchaseOrders" EntitySet="PurchaseOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Storage__PartID__403A8C7D" Association="Self.FK__Storage__PartID__403A8C7D">
+            <End Role="Parts" EntitySet="Parts" />
+            <End Role="Storage" EntitySet="Storage" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PurchaseO__Playe__46E78A0C" Association="Self.FK__PurchaseO__Playe__46E78A0C">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="PurchaseOrders" EntitySet="PurchaseOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Storage__PlayerI__3F466844" Association="Self.FK__Storage__PlayerI__3F466844">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="Storage" EntitySet="Storage" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Хранилище PR7ModelContainer" CdmEntityContainer="PR7Entities">
+          <EntitySetMapping Name="Orders">
+            <EntityTypeMapping TypeName="PR7Model.Orders">
+              <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="PlayerID" ColumnName="PlayerID" />
+                <ScalarProperty Name="ClientName" ColumnName="ClientName" />
+                <ScalarProperty Name="CarModel" ColumnName="CarModel" />
+                <ScalarProperty Name="BrokenPartID" ColumnName="BrokenPartID" />
+                <ScalarProperty Name="InstalledPartID" ColumnName="InstalledPartID" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="RepairPrice" ColumnName="RepairPrice" />
+                <ScalarProperty Name="FinePrice" ColumnName="FinePrice" />
+                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Parts">
+            <EntityTypeMapping TypeName="PR7Model.Parts">
+              <MappingFragment StoreEntitySet="Parts">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="PurchasePrice" ColumnName="PurchasePrice" />
+                <ScalarProperty Name="RepairPrice" ColumnName="RepairPrice" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Players">
+            <EntityTypeMapping TypeName="PR7Model.Players">
+              <MappingFragment StoreEntitySet="Players">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="TotalRepairs" ColumnName="TotalRepairs" />
+                <ScalarProperty Name="TotalFines" ColumnName="TotalFines" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PurchaseOrders">
+            <EntityTypeMapping TypeName="PR7Model.PurchaseOrders">
+              <MappingFragment StoreEntitySet="PurchaseOrders">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="PlayerID" ColumnName="PlayerID" />
+                <ScalarProperty Name="PartID" ColumnName="PartID" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="DeliveryAfter" ColumnName="DeliveryAfter" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Storage">
+            <EntityTypeMapping TypeName="PR7Model.Storage">
+              <MappingFragment StoreEntitySet="Storage">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="PlayerID" ColumnName="PlayerID" />
+                <ScalarProperty Name="PartID" ColumnName="PartID" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
