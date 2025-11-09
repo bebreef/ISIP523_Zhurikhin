@@ -22,7 +22,7 @@ namespace PR8
     
         public int ID { get; set; }
         public int UserID { get; set; }
-        public int PickupPointID { get; set; }
+        public Nullable<int> PickupPointID { get; set; }
         public int Status { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

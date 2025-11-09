@@ -46,7 +46,7 @@ namespace PR8
             Console.WriteLine("6. История заказов");
             Console.WriteLine("0. Выход");
             Console.WriteLine("--------------------------------------------");
-            Console.WriteLine($"Пользователь: {currentUser.Login}");
+            Console.WriteLine(currentUser != null ? $"Пользователь: {currentUser.Login}" : "Гость");
             Console.Write("Выбор: ");
         }
         static void Register()
@@ -118,8 +118,11 @@ namespace PR8
             }
 
             Console.Write("\nДобавить товар в корзину? (да/нет): ");
-            if (Console.ReadLine().Trim().ToLower() == "да")
-                AddToCart();
+            string answer = Console.ReadLine().Trim().ToLower();
+            if (answer == "да")
+            {
+                AddToCart();  
+            }
         }
         static void AddToCart()
         {
@@ -131,7 +134,7 @@ namespace PR8
             if (cart == null)
             {
                 int newId = CorePR8.Context.Orders.Any() ? CorePR8.Context.Orders.Max(o => o.ID) + 1 : 1;
-                cart = new Orders { ID = newId, UserID = currentUser.ID, PickupPointID = 0, Status = 0 };
+                cart = new Orders { ID = newId, UserID = currentUser.ID, Status = 0 };
                 CorePR8.Context.Orders.Add(cart);
                 CorePR8.Context.SaveChanges();
             }
@@ -261,7 +264,6 @@ namespace PR8
                 {
                     ID = newCartId,
                     UserID = currentUser.ID,
-                    PickupPointID = 0,
                     Status = 0
                 });
             }
@@ -313,6 +315,28 @@ namespace PR8
         }
         static void Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.WriteLine("Добро пожаловать в GMWOG маркетплейс!");
+                InitializeTestData();
+
+                bool running = true;
+                while (running)
+                {
+                    ShowMenu();
+                    string choice = Console.ReadLine().Trim();
+
+                    switch (choice)
+                    {
+                        case "1": Register(); break;
+                        case "2": currentUser = Login(); break;
+                        case "3": ViewingProducts(); break;
+                        case "4": ViewingCart(); break;
+                        case "5": PlaceAnOrder(); break;
+                        case "6": ShowOrders(); break;
+                        case "0": running = false; Console.WriteLine("Мы всё ещё ждём ваших денег."); break;
+                        default: Console.WriteLine("Неверный выбор!"); break;
+                    }
+                }
+            }
         }
     }
-}

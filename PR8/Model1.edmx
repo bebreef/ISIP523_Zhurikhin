@@ -21,7 +21,7 @@
           </Key>
           <Property Name="ID" Type="int" Nullable="false" />
           <Property Name="UserID" Type="int" Nullable="false" />
-          <Property Name="PickupPointID" Type="int" Nullable="false" />
+          <Property Name="PickupPointID" Type="int" />
           <Property Name="Status" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="PickupPoints">
@@ -86,7 +86,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK__Orders__PickupPo__5165187F">
-          <End Role="PickupPoints" Type="Self.PickupPoints" Multiplicity="1" />
+          <End Role="PickupPoints" Type="Self.PickupPoints" Multiplicity="0..1" />
           <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PickupPoints">
@@ -156,7 +156,7 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" />
           <Property Name="UserID" Type="Int32" Nullable="false" />
-          <Property Name="PickupPointID" Type="Int32" Nullable="false" />
+          <Property Name="PickupPointID" Type="Int32" />
           <Property Name="Status" Type="Int32" Nullable="false" />
           <NavigationProperty Name="OrderItems" Relationship="Self.FK__OrderItem__Order__5535A963" FromRole="Orders" ToRole="OrderItems" />
           <NavigationProperty Name="PickupPoints" Relationship="Self.FK__Orders__PickupPo__5165187F" FromRole="Orders" ToRole="PickupPoints" />
@@ -227,7 +227,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK__Orders__PickupPo__5165187F">
-          <End Role="PickupPoints" Type="Self.PickupPoints" Multiplicity="1" />
+          <End Role="PickupPoints" Type="Self.PickupPoints" Multiplicity="0..1" />
           <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PickupPoints">
