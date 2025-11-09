@@ -101,6 +101,72 @@ namespace PR8
             Console.WriteLine($"Добро пожаловать, {user.Login}!");
             return user;
         }
+        static void ViewingProducts()
+        {
+            Console.WriteLine("\nКаталог товаров:");
+            Console.WriteLine("--------------------------------------------");
+            foreach (var p in CorePR8.Context.Products)
+            {
+                Console.WriteLine($"{p.ID}. {p.Name}");
+                Console.WriteLine($"   {p.Description} — {p.Price:F0}₽");
+            }
+
+            if (currentUser == null)
+            {
+                Console.WriteLine("\nАвторизуйтесь для добавления в корзину.");
+                return;
+            }
+
+            Console.Write("\nДобавить товар в корзину? (да/нет): ");
+            if (Console.ReadLine().Trim().ToLower() == "да")
+                AddToCart();
+        }
+        static void AddToCart()
+        {
+            if (currentUser == null) { Console.WriteLine("Сначала авторизуйтесь!"); return; }
+
+            var cart = CorePR8.Context.Orders
+                .FirstOrDefault(o => o.UserID == currentUser.ID && o.Status == 0);
+
+            if (cart == null)
+            {
+                int newId = CorePR8.Context.Orders.Any() ? CorePR8.Context.Orders.Max(o => o.ID) + 1 : 1;
+                cart = new Orders { ID = newId, UserID = currentUser.ID, PickupPointID = 0, Status = 0 };
+                CorePR8.Context.Orders.Add(cart);
+                CorePR8.Context.SaveChanges();
+            }
+
+            Console.Write("ID товара: ");
+            int productId = int.Parse(Console.ReadLine().Trim());
+
+            var product = CorePR8.Context.Products.Find(productId);
+            if (product == null)
+            {
+                Console.WriteLine("Товар не найден!");
+                return;
+            }
+
+            Console.Write("Количество: ");
+            int qty = int.Parse(Console.ReadLine().Trim());
+
+            var item = CorePR8.Context.OrderItems
+                .FirstOrDefault(oi => oi.OrderID == cart.ID && oi.ProductID == productId);
+
+            if (item != null)
+                item.Quantity += qty;
+            else
+                CorePR8.Context.OrderItems.Add(new OrderItems
+                {
+                    OrderID = cart.ID,
+                    ProductID = productId,
+                    Quantity = qty,
+                    PriceAtTime = product.Price
+                });
+
+            CorePR8.Context.SaveChanges();
+            Console.WriteLine($"Добавлено {qty} × {product.Name} в корзину!");
+        }
+
         static void Main(string[] args)
         {
         }
