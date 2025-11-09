@@ -166,7 +166,151 @@ namespace PR8
             CorePR8.Context.SaveChanges();
             Console.WriteLine($"Добавлено {qty} × {product.Name} в корзину!");
         }
+        static void ViewingCart()
+        {
+            if (currentUser == null) { Console.WriteLine("Сначала авторизуйтесь!"); return; }
 
+            var cart = CorePR8.Context.Orders
+                .FirstOrDefault(o => o.UserID == currentUser.ID && o.Status == 0);
+
+            if (cart == null || !CorePR8.Context.OrderItems.Any(oi => oi.OrderID == cart.ID))
+            {
+                Console.WriteLine("Корзина пуста!");
+                return;
+            }
+
+            var items = CorePR8.Context.OrderItems
+                .Where(oi => oi.OrderID == cart.ID)
+                .Join(CorePR8.Context.Products,
+                    oi => oi.ProductID,
+                    p => p.ID,
+                    (oi, p) => new { p.Name, oi.Quantity, oi.PriceAtTime })
+                .ToList();
+
+            Console.WriteLine("\nКорзина:");
+            Console.WriteLine();
+            decimal total = 0;
+            foreach (var item in items)
+            {
+                decimal sum = item.PriceAtTime * item.Quantity;
+                Console.WriteLine($"{item.Name} × {item.Quantity} = {sum:F0}₽");
+                total += sum;
+            }
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine($"Итого: {total}₽");
+        }
+        static void PlaceAnOrder()
+        {
+            if (currentUser == null) { Console.WriteLine("Сначала авторизуйтесь!"); return; }
+
+            var cart = CorePR8.Context.Orders
+                .FirstOrDefault(o => o.UserID == currentUser.ID && o.Status == 0);
+
+            if (cart == null || !CorePR8.Context.OrderItems.Any(oi => oi.OrderID == cart.ID))
+            {
+                Console.WriteLine("Корзина пуста!");
+                return;
+            }
+
+            var cartItems = CorePR8.Context.OrderItems.Where(oi => oi.OrderID == cart.ID).ToList();
+
+            Console.WriteLine("\n1. Один товар");
+            Console.WriteLine("2. Всю корзину");
+            Console.Write("Выбор: ");
+            string choice = Console.ReadLine().Trim();
+
+            List<OrderItems> toBuy;
+            if (choice == "1")
+            {
+                Console.WriteLine("\nТовары в корзине:");
+                foreach (var item in cartItems)
+                {
+                    var p = CorePR8.Context.Products.Find(item.ProductID);
+                    Console.WriteLine($"{p.ID}. {p.Name} × {item.Quantity}");
+                }
+                Console.Write("ID товара: ");
+                int id = int.Parse(Console.ReadLine().Trim());
+                var selected = cartItems.First(i => CorePR8.Context.Products.Find(i.ProductID).ID == id);
+                toBuy = new List<OrderItems> { selected };
+            }
+            else
+            {
+                toBuy = cartItems;
+            }
+
+            Console.WriteLine("\nПункты выдачи:");
+            foreach (var pvz in CorePR8.Context.PickupPoints)
+                Console.WriteLine($"{pvz.ID}. {pvz.City}: {pvz.Address}");
+
+            Console.Write("ID ПВЗ: ");
+            int pvzId = int.Parse(Console.ReadLine().Trim());
+
+            cart.PickupPointID = pvzId;
+            cart.Status = 1;
+
+            if (choice == "1")
+            {
+                CorePR8.Context.OrderItems.Remove(toBuy[0]);
+                if (!CorePR8.Context.OrderItems.Any(oi => oi.OrderID == cart.ID))
+                    CorePR8.Context.Orders.Remove(cart);
+            }
+            else
+            {
+                int newCartId = CorePR8.Context.Orders.Any() ? CorePR8.Context.Orders.Max(o => o.ID) + 1 : 1;
+                CorePR8.Context.Orders.Add(new Orders
+                {
+                    ID = newCartId,
+                    UserID = currentUser.ID,
+                    PickupPointID = 0,
+                    Status = 0
+                });
+            }
+
+            CorePR8.Context.SaveChanges();
+            Console.WriteLine("Заказ оформлен успешно!");
+        }
+        static void ShowOrders()
+        {
+            if (currentUser == null) { Console.WriteLine("Сначала авторизуйтесь!"); return; }
+
+            var orders = CorePR8.Context.Orders
+                .Where(o => o.UserID == currentUser.ID && o.Status == 1)
+                .OrderByDescending(o => o.ID)
+                .ToList();
+
+            if (!orders.Any())
+            {
+                Console.WriteLine("У вас нет заказов.");
+                return;
+            }
+
+            Console.WriteLine("\nИстория заказов:");
+            Console.WriteLine("--------------------------------------------");
+
+            foreach (var order in orders)
+            {
+                var pvz = CorePR8.Context.PickupPoints.Find(order.PickupPointID);
+                Console.WriteLine($"\nЗаказ #{order.ID}");
+                Console.WriteLine($"ПВЗ: {pvz.City}, {pvz.Address}");
+
+                var items = CorePR8.Context.OrderItems
+                    .Where(oi => oi.OrderID == order.ID)
+                    .Join(CorePR8.Context.Products,
+                        oi => oi.ProductID,
+                        p => p.ID,
+                        (oi, p) => new { p.Name, oi.Quantity, oi.PriceAtTime })
+                    .ToList();
+
+                decimal total = 0;
+                foreach (var item in items)
+                {
+                    decimal sum = item.PriceAtTime * item.Quantity;
+                    Console.WriteLine($"  {item.Name} × {item.Quantity} = {sum}₽");
+                    total += sum;
+                }
+                Console.WriteLine($"  Итого: {total}₽");
+            }
+        }
         static void Main(string[] args)
         {
         }
