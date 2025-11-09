@@ -34,6 +34,73 @@ namespace PR8
                 Console.WriteLine("Тестовые данные загружены!");
             }
         }
+        static void ShowMenu()
+        {
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("GMWOG — МАРКЕТПЛЕЙС");
+            Console.WriteLine("1. Регистрация");
+            Console.WriteLine("2. Вход");
+            Console.WriteLine("3. Каталог товаров");
+            Console.WriteLine("4. Корзина");
+            Console.WriteLine("5. Оформить заказ");
+            Console.WriteLine("6. История заказов");
+            Console.WriteLine("0. Выход");
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine($"Пользователь: {currentUser.Login}");
+            Console.Write("Выбор: ");
+        }
+        static void Register()
+        {
+            int newId = 1;
+            if (CorePR8.Context.Users.Any())
+            {
+                newId = CorePR8.Context.Users.Max(u => u.ID) + 1;
+            }
+
+            Console.Write("Введите логин: ");
+            string login = Console.ReadLine().Trim();
+
+            if (CorePR8.Context.Users.Any(u => u.Login == login))
+            {
+                Console.WriteLine("Такой логин уже существует!");
+                return;
+            }
+
+            Console.Write("Введите пароль: ");
+            string pass1 = Console.ReadLine();
+            Console.Write("Повторите пароль: ");
+            string pass2 = Console.ReadLine();
+
+            if (pass1 != pass2)
+            {
+                Console.WriteLine("Пароли не совпадают!");
+                return;
+            }
+
+            var user = new Users { ID = newId, Login = login, Password = pass1 };
+            CorePR8.Context.Users.Add(user);
+            CorePR8.Context.SaveChanges();
+            Console.WriteLine("Регистрация успешна!");
+        }
+        static Users Login()
+        {
+            Console.Write("Введите логин: ");
+            string login = Console.ReadLine().Trim();
+            Console.Write("Введите пароль: ");
+            string password = Console.ReadLine();
+
+            var user = CorePR8.Context.Users
+                .FirstOrDefault(u => u.Login == login && u.Password == password);
+
+            if (user == null)
+            {
+                Console.WriteLine("Неверный логин или пароль!");
+                return null;
+            }
+
+            Console.WriteLine($"Добро пожаловать, {user.Login}!");
+            return user;
+        }
         static void Main(string[] args)
         {
         }
