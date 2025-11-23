@@ -51,10 +51,9 @@ namespace ISIP523_Zhurikhin
                     OpenChest();
                 else
                     FightEnemy();
-
-                Console.ReadLine();
-                player.RegenerateStamina();
+                Console.ReadLine(); 
             }
+
             Console.WriteLine("Игра окончена!");
         }
 
@@ -82,7 +81,6 @@ namespace ISIP523_Zhurikhin
             while (player.isAlive && enemy.isAlive)
             {
                 Console.WriteLine($"{enemy.Name}: HP={enemy.HP}/{enemy.MaxHP}");
-
                 if (!player.isFrozen)
                 {
                     Console.WriteLine("Выберите: 1-Аттаковать, 2-Защищаться");
@@ -93,12 +91,13 @@ namespace ISIP523_Zhurikhin
                     {
                         player.Stamina -= player.equippedweapon.staminacost;
                         player.equippedweapon.durability = Math.Max(1, player.equippedweapon.durability - 1);
+
                         int damage = player.equippedweapon.dmg;
                         if (player.equippedarmor.bufftype == player.equippedweapon.name)
                             damage += 1;
 
-                        enemy.TakeDamage(damage); 
-                        Console.WriteLine($"{player.Name} атакует с помощью {player.equippedweapon.name} и наносит {damage} урона!"); 
+                        enemy.TakeDamage(damage);
+                        Console.WriteLine($"{player.Name} атакует с помощью {player.equippedweapon.name} и наносит {damage} урона!");
                         Console.WriteLine("-------------------------------------");
                     }
                     else if (choice == "1")
@@ -114,18 +113,23 @@ namespace ISIP523_Zhurikhin
                 else
                 {
                     Console.WriteLine($"{player.Name} заморожен и пропускает ход!");
-                    player.isFrozen = false;
+                    player.isFrozen = false; 
                 }
-
-                if (enemy.isAlive)
+                if (enemy.isAlive) { 
                     enemy.AttackPlayer(player);
-
-                if (!enemy.isAlive)
-                    OpenChest();
+                    player.RegenerateStamina();
+                }
             }
-
-            if (!player.isAlive)
+            if (!enemy.isAlive)
+            {
+                Console.WriteLine($"{enemy.Name} повержен!");
+                OpenChest();
+                player.RewardStamina();
+            }
+            else if (!player.isAlive)
+            {
                 Console.WriteLine("Вы погибли...");
+            }
         }
 
         private void OpenChest()
