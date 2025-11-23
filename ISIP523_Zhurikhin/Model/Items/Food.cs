@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ISIP523_Zhurikhin.Model.Items
+namespace ISIP523_Zhurikhin
 {
-    internal class Food
+    public class Food
     {
+        public string name = "ХЭЛБ";
+        public int healamount = 2;
     }
 }

@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ISIP523_Zhurikhin.Model.Items
+namespace ISIP523_Zhurikhin
 {
-    internal class StaminaPotion
+    public class StaminaPotion
     {
+        public string name;
+        public int staminaamount;
     }
 }

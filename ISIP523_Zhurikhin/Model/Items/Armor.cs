@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ISIP523_Zhurikhin.Model.Items
+namespace ISIP523_Zhurikhin
 {
-    internal class Armor
+    public class Armor
     {
+        public string name;
+        public int defense;
+        public string bufftype;
     }
 }
