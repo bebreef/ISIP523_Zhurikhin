@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-
+﻿
 class BaseEntity
 {
     public int ID;
