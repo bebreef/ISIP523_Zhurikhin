@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Pr13.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="OrdersPage">
+      Title="Корзина">
 
     <Grid>
         
