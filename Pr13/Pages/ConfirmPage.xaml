@@ -8,7 +8,55 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Подтверждение">
 
-    <Grid>
-        
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" 
+                   Text="Оформление заказа" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,20"/>
+
+
+        <ListView Grid.Row="2" 
+          ItemsSource="{Binding CartItems}"
+          Margin="0,0,0,20">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Товар" DisplayMemberBinding="{Binding Title}" Width="350"/>
+                    <GridViewColumn Header="Цена"   DisplayMemberBinding="{Binding Price, StringFormat={}{0:N0} ₽}" Width="120"/>
+                    <GridViewColumn Header="Кол-во"  DisplayMemberBinding="{Binding Quantity}" Width="100"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Grid Grid.Row="3" Margin="0,0,0,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="ФИО:" VerticalAlignment="Center" Margin="0,0,10,10"/>
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="tbFullName" Margin="0,0,0,10"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Email:" VerticalAlignment="Center" Margin="0,0,10,10"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="tbEmail" Margin="0,0,0,10"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Адрес:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="tbAddress"/>
+        </Grid>
+
+        <Button Grid.Row="4" HorizontalAlignment="Right" Content="Оформить заказ" Width="180" Padding="12,8" Background="#4CAF50" Foreground="White" Click="ConfirmOrder_Click"/>
     </Grid>
 </Page>
