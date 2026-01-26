@@ -9,6 +9,11 @@
       Title="Корзина">
 
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBox Grid.Row="0" HorizontalAlignment="Center" Text="Ваша Корзина:" Margin="10" FontSize="25" FontWeight="Bold" IsReadOnly="True"/>
+        <TextBox Grid.Row="1" x:Name="CartText" FontSize="20"/>
     </Grid>
 </Page>

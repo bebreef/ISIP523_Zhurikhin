@@ -12,7 +12,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="Товары" FontSize="24" FontWeight="Bold" Margin="0,0,0,16"/>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
             <ItemsControl ItemsSource="{Binding Products}">
                 <ItemsControl.ItemsPanel>
@@ -23,7 +22,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border BorderBrush="#DDD" BorderThickness="1" Margin="10" Padding="10" Width="220" MinWidth="200" MaxWidth="260">
-                            <StackPanel>
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <Image Source="{Binding ImagePath}" Height="160" Margin="0,0,0,8" Stretch="Uniform"/>
                                 <TextBlock Text="{Binding Title}" FontSize="14" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,4" MaxHeight="60"/>
                                 <TextBlock Text="{Binding Price, StringFormat={}{0:N0} ₽}" FontSize="16" FontWeight="Bold" TextAlignment="Center"/>

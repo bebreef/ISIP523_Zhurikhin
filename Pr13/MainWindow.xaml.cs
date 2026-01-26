@@ -60,6 +60,10 @@ namespace Pr13
                 Title = $"Магазин – {page.Title}";
             }
         }
+        public void SetNextButtonEnabled(bool isEnabled)
+        {
+            ForwardButton.IsEnabled = isEnabled;
+        }
 
         private void BackButton_OnClick(object sender, RoutedEventArgs e)
         {
