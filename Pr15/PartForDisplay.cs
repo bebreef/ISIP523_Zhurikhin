@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pr15
 {
-    internal class Core
+    internal class PartForDisplay
     {
-        public static PR15Entities Context = new PR15Entities();
-
     }
-
 }

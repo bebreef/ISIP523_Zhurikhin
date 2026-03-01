@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Pr15.Pages;
 
 namespace Pr15
 {
@@ -23,6 +24,11 @@ namespace Pr15
         public MainWindow()
         {
             InitializeComponent();
+            MainFrame.Navigate(new CatalogPage());
         }
+
+        private void Catalog_Click(object sender, RoutedEventArgs e) => MainFrame.Navigate(new CatalogPage());
+        private void CurrentBuild_Click(object sender, RoutedEventArgs e) => MainFrame.Navigate(new CurrentBuildPage());
+        private void Saved_Click(object sender, RoutedEventArgs e) => MainFrame.Navigate(new SavedBuildsPage());
     }
 }
