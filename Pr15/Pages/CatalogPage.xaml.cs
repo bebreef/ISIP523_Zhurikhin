@@ -60,37 +60,38 @@ namespace Pr15.Pages
 
         private void lbParts_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (lbParts.SelectedItem is basepart_ part)
-            {
-                string typeName = part.parttype_.name ?? "";
+            if (lbParts.SelectedItem is basepart_ newPart)
+    {
+                string typeName = newPart.parttype_.name ?? "";
 
-                if (!CanAddPart(typeName))
+                if (CanAddPart(typeName))
                 {
-                    string message = "";
-
-                    if (typeName == "RAM")
-                        message = "Нельзя добавить больше 4 плашек оперативной памяти";
-                    else if (typeName == "CPU")
-                        message = "Можно добавить только один процессор";
-                    else if (typeName == "Motherboard")
-                        message = "Можно добавить только одну материнскую плату";
-                    else if (typeName == "Case")
-                        message = "Можно добавить только один корпус";
-                    else if (typeName == "ProcessorCooler")
-                        message = "Можно добавить только один кулер для процессора";
-                    else if (typeName == "PowerSupply")
-                        message = "Можно добавить только один блок питания";
-                    else if (typeName == "GPU")
-                        message = "Можно добавить только одну видеокарту";
-                    else
-                        message = "Нельзя добавить ещё одну такую комплектующую";
-
-                    MessageBox.Show(message, "Лимит превышен", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    App.CurrentBuild.Add(newPart);
+                    MessageBox.Show($"Добавлено: {newPart.name}");
                     return;
                 }
 
-                App.CurrentBuild.Add(part);
-                MessageBox.Show($"Добавлено: {part.name}");
+                string message = "";
+                if (typeName == "RAM")
+                    message = "Уже добавлено 4 плашки RAM. Заменить одну из них на новую?";
+                else if (typeName == "CPU" || typeName == "Motherboard" || typeName == "Case" || typeName == "ProcessorCooler" || typeName == "PowerSupply" || typeName == "GPU")
+                    message = $"Уже добавлен {typeName.ToLower()}. Заменить на новую модель?";
+                else
+                    message = "Лимит превышен. Заменить существующую деталь?";
+
+                var result = MessageBox.Show(message, "Заменить деталь?",MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    var toRemove = App.CurrentBuild.Where(p => p.parttype_.name == typeName).ToList();
+                    foreach (var oldPart in toRemove)
+                    {
+                        App.CurrentBuild.Remove(oldPart);
+                    }
+
+                    App.CurrentBuild.Add(newPart);
+                    MessageBox.Show($"Заменено на: {newPart.name}");
+                }
             }
         }
 
