@@ -20,6 +20,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="4">
+                        <Image Source="{Binding image}" Width="80" Height="80" Stretch="Uniform" Margin="0,0,12,0"/>
                         <TextBlock Text="{Binding name}" FontWeight="Bold"/>
                         <TextBlock Text="{Binding ManufacturerName}" Foreground="Gray"/>
                         <TextBlock Text="{Binding ShortDesc}"/>
