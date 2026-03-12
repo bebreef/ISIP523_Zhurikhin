@@ -7,6 +7,13 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+        <Grid x:Name="StartMenuGrid" Background="#CC000000">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="ПОМОГИТЕ Я НЕ ХОТЕЛ ЭТО ДЕЛАТЬ" FontSize="40" FontWeight="Bold" Foreground="#FFD4AF37" Margin="0,0,0,60" HorizontalAlignment="Center"/>
+                <Button Content="старт зе гейм" FontSize="32" Padding="60,30" Width="420" Height="100" Click="StartGame_Click" Background="#FF2E7D32" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+                <TextBlock Text="но все-же это забавно" FontSize="16" Foreground="Gray" Margin="0,80,0,0" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

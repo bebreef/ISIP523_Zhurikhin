@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Pr16.Pages;
 
 namespace Pr16
 {
@@ -23,6 +24,20 @@ namespace Pr16
         public MainWindow()
         {
             InitializeComponent();
+            StartMenuGrid.Visibility = Visibility.Visible;
+            MainFrame.Content = null;
+        }
+
+        private void StartGame_Click(object sender, RoutedEventArgs e)
+        {
+            StartMenuGrid.Visibility = Visibility.Collapsed;
+            var page = new GamePage();
+            MainFrame.Content = page;
+
+            if (page.DataContext is ViewModels.GameViewModel vm)
+            {
+                vm.StartNewGame();
+            }
         }
     }
 }
