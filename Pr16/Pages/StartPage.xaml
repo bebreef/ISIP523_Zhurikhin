@@ -1,0 +1,50 @@
+﻿<Page x:Class="Pr16.Pages.StartPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="#0F0F17">
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="ROGUELIKE" FontSize="52" FontWeight="Bold" Foreground="#E0E0FF" HorizontalAlignment="Center" Margin="0,24,0,48"/>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" CanContentScroll="True" Padding="0,0,8,0">
+            <Border Background="#1A1A2E" CornerRadius="16" Padding="32" MaxWidth="680" HorizontalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="Имя героя" Foreground="WhiteSmoke" FontSize="20" Margin="0,0,0,8"/>
+                    <TextBox Text="{Binding PlayerName, UpdateSourceTrigger=PropertyChanged}" FontSize="18" Padding="10" Height="44" Margin="0,0,0,32"/>
+                    <TextBlock Text="Выберите оружие" Foreground="WhiteSmoke" FontSize="20" Margin="0,0,0,16"/>
+                    <UniformGrid Columns="3" Margin="0,0,0,40">
+                        <StackPanel Margin="12">
+                            <Image Source="/Assets/sword.png" Height="100" Stretch="Uniform"/>
+                            <RadioButton Content="Меч" GroupName="Weapon" IsChecked="{Binding SelectedSword}" Foreground="White" FontSize="16" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        </StackPanel>
+                        <StackPanel Margin="12">
+                            <Image Source="/Assets/claymore.png" Height="100" Stretch="Uniform"/>
+                            <RadioButton Content="Клеймор" GroupName="Weapon" IsChecked="{Binding SelectedClaymore}" Foreground="White" FontSize="16" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        </StackPanel>
+                        <StackPanel Margin="12">
+                            <Image Source="/Assets/axe.png" Height="100" Stretch="Uniform"/>
+                            <RadioButton Content="Топор" GroupName="Weapon" IsChecked="{Binding SelectedAxe}" Foreground="White" FontSize="16" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </UniformGrid>
+                    <TextBlock Text="Выберите броню" Foreground="WhiteSmoke" FontSize="20" Margin="0,0,0,16"/>
+                    <UniformGrid Columns="3">
+                        <StackPanel Margin="12">
+                            <Image Source="/Assets/lightarmor.png" Height="100" Stretch="Uniform"/>
+                            <RadioButton Content="Лёгкая" GroupName="Armor" IsChecked="{Binding SelectedLightArmor}" Foreground="White" FontSize="16" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        </StackPanel>
+                        <StackPanel Margin="12">
+                            <Image Source="/Assets/mediumarmor.png" Height="100" Stretch="Uniform"/>
+                            <RadioButton Content="Средняя" GroupName="Armor" IsChecked="{Binding SelectedMediumArmor}" Foreground="White" FontSize="16" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        </StackPanel>
+                        <StackPanel Margin="12">
+                            <Image Source="/Assets/heavyarmor.png" Height="100" Stretch="Uniform"/>
+                            <RadioButton Content="Тяжёлая" GroupName="Armor" IsChecked="{Binding SelectedHeavyArmor}" Foreground="White" FontSize="16" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </UniformGrid>
+                    <Rectangle Height="40"/>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+        <Button Grid.Row="2" Content="НАЧАТЬ ИГРУ" Width="280" Height="60" FontSize="22" Background="#4A6FFF" Foreground="White" BorderThickness="0" Margin="0,32,0,24" Click="StartGame_Click"/>
+    </Grid>
+</Page>

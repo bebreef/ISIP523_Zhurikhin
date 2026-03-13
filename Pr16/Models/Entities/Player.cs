@@ -15,6 +15,7 @@ namespace Pr16.Models.Entities
         public Armor equippedarmor;
         public bool isFrozen;
         public bool isDefending;
+        public List<object> Inventory = new List<object>();
 
         public Player(string name, int health, Weapon startweapon, Armor startarmor)
         {

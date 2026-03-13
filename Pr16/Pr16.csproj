@@ -55,12 +55,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Pages\GameOverPage.xaml.cs">
+      <DependentUpon>GameOverPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\StartPage.xaml.cs">
+      <DependentUpon>StartPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Services\ChestState.cs" />
     <Compile Include="Services\Random.cs" />
     <Compile Include="ViewModels\GameViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
+    <Compile Include="ViewModels\StartViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -73,7 +81,15 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Pages\GameOverPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\GamePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\StartPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -121,8 +137,44 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\" />
-    <Folder Include="Views\" />
+    <Resource Include="Assets\background_2.png" />
+    <Resource Include="Assets\background_3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\claymore.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\axe.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\heavyarmor.png" />
+    <Resource Include="Assets\mediumarmor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\sword.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\lightarmor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\background_default.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\chest.png" />
+    <Resource Include="Assets\goblin.png" />
+    <Resource Include="Assets\mage.png" />
+    <Resource Include="Assets\skeleton.png" />
+    <Resource Include="Assets\unknown_enemy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\slime.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\background_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\bread.png" />
+    <Resource Include="Assets\potion.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
