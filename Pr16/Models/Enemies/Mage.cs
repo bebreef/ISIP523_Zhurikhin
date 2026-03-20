@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Pr16.Models.Entities;
-using System.Xml.Linq;
+using Pr16.Services;
 
 namespace Pr16.Models.Enemies
 {
@@ -15,9 +11,9 @@ namespace Pr16.Models.Enemies
         public Mage()
         {
             Name = "Маг";
-            MaxHP = 10;
+            MaxHP = 25;
             HP = MaxHP;
-            attack = 2;
+            attack = 5;
             defense = 2;
         }
 
@@ -26,19 +22,9 @@ namespace Pr16.Models.Enemies
             if (Pr16.Services.Random.NextDouble() < FreezeChance)
             {
                 player.isFrozen = true;
-                Console.WriteLine($"{Name} замораживет {player.Name}! Пропуск хода!");
+                LogAction?.Invoke($"{Name} замораживает {player.Name}! Пропуск хода!");
             }
-            int damage = attack;
-            if (player.isDefending && Pr16.Services.Random.NextDouble() < 0.4)
-            {
-                Console.WriteLine($"{player.Name} уклоняется от атаки!");
-            }
-            else
-            {
-                damage = Math.Max(0, damage - player.equippedarmor.defense);
-                player.HP -= damage;
-                Console.WriteLine($"{Name} наносит {damage} урон(а) {player.Name}!");
-            }
+            base.AttackPlayer(player);
         }
     }
 }

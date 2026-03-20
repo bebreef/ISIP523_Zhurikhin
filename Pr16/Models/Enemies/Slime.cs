@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Pr16.Models.Entities;
-using System.Xml.Linq;
+﻿using Pr16.Models.Entities;
+using Pr16.Services;
+using System;
 
 namespace Pr16.Models.Enemies
 {
@@ -21,25 +17,36 @@ namespace Pr16.Models.Enemies
 
         public override void TakeDamage(int damage)
         {
-            int actualDamage = Math.Max(0, damage - 2);
-            if (damage > actualDamage)
-                Console.WriteLine("Слизень поглощает 2 урона!");
+            int reduced = Math.Max(0, damage - 2);
 
-            HP -= actualDamage;
+            if (damage > reduced)
+                LogAction?.Invoke("Слизень поглощает 2 урона!");
+
+            HP -= reduced;
+            LogAction?.Invoke($"{Name} получает {reduced} урона");
         }
 
         public override void AttackPlayer(Player player)
         {
             int damage = attack;
-            if (player.isDefending && Pr16.Services.Random.NextDouble() < 0.4)
+            if (player.isDefending)
             {
-                Console.WriteLine($"{player.Name} уклоняется от атаки!");
-                return;
+                if (Pr16.Services.Random.NextDouble() < 0.4)
+                {
+                    LogAction?.Invoke($"{player.Name} уклоняется!");
+                    return;
+                }
+                double blockPercent = Pr16.Services.Random.Next(70, 101) / 100.0;
+                int block = (int)(player.equippedarmor.defense * blockPercent);
+                damage = Math.Max(0, damage - block);
+                LogAction?.Invoke($"{player.Name} блокирует {block} урона");
             }
-
-            damage = Math.Max(0, damage - player.equippedarmor.defense);
+            else
+            {
+                damage = Math.Max(0, damage - player.equippedarmor.defense);
+            }
             player.HP -= damage;
-            Console.WriteLine($"{Name} наносит {damage} урона {player.Name}!");
+            LogAction?.Invoke($"{Name} наносит {damage} урона {player.Name}");
         }
     }
 }

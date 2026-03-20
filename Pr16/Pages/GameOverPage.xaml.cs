@@ -9,10 +9,12 @@ namespace Pr16.Pages
         {
             InitializeComponent();
         }
-
         private void Restart_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new StartPage());
+            if (Application.Current.MainWindow is Pr16.MainWindow mw)
+            {
+                mw.MainFrame.Navigate(new StartPage());
+            }
         }
     }
 }

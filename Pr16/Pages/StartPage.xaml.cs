@@ -35,13 +35,13 @@ namespace Pr16.Pages
 
             var gameVM = new GameViewModel();
             gameVM.Player = player;
-            gameVM.Log.Add($"Добро пожаловать, {player.Name}!");
-            gameVM.Log.Add($"Оружие: {weapon.name}   Броня: {armor.name}");
+
+            gameVM.LogAdd($"Добро пожаловать, {player.Name}!");
+            gameVM.LogAdd($"Оружие: {weapon.name} Броня: {armor.name}");
 
             var gamePage = new GamePage();
             gamePage.DataContext = gameVM;
-
-            gameVM.NextTurn();  
+            gameVM.NextTurn();
 
             NavigationService?.Navigate(gamePage);
         }

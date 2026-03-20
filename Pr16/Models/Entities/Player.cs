@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using Pr16.Models.Items;
 
 namespace Pr16.Models.Entities
@@ -10,12 +6,15 @@ namespace Pr16.Models.Entities
     public class Player : BaseEntity
     {
         public int Stamina;
-        public int MaxStamina = 20;
+        public int MaxStamina = 30;
+
         public Weapon equippedweapon;
         public Armor equippedarmor;
+
         public bool isFrozen;
         public bool isDefending;
-        public List<object> Inventory = new List<object>();
+
+        public ObservableCollection<object> Inventory { get; } = new ObservableCollection<object>();
 
         public Player(string name, int health, Weapon startweapon, Armor startarmor)
         {
@@ -26,20 +25,31 @@ namespace Pr16.Models.Entities
             equippedweapon = startweapon;
             equippedarmor = startarmor;
         }
+
         public void RegenerateStamina()
         {
             if (!isFrozen)
-            {
-                Stamina = Math.Min(Stamina + 1, MaxStamina);
-            }
+                Stamina = System.Math.Min(Stamina + 1, MaxStamina);
+
             isFrozen = false;
-            Console.WriteLine($"Раунд боя завершён. +1 выносливость -> {Stamina}/{MaxStamina}");
         }
 
         public void RewardStamina()
         {
-            Stamina = Math.Min(Stamina + 2, MaxStamina);
-            Console.WriteLine($"Победа! Восстановлено +2 выносливости -> {Stamina}/{MaxStamina}");
+            Stamina = System.Math.Min(Stamina + 2, MaxStamina);
+        }
+        public bool TrySpendStamina(int amount)
+        {
+            if (Stamina < amount)
+                return false;
+
+            Stamina -= amount;
+            return true;
+        }
+
+        public void ResetTurnStates()
+        {
+            isDefending = false;
         }
     }
 }

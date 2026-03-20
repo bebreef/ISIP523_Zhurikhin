@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pr16.Models.Enemies
 {
@@ -11,11 +7,11 @@ namespace Pr16.Models.Enemies
         public VVG()
         {
             Name = "ВВГ";
-            MaxHP = (int)Math.Round(15 * 2.0);
+            MaxHP = (int)Math.Round(30 * 2.0);
             HP = MaxHP;
-            attack = (int)Math.Round(3 * 1.5);
-            defense = (int)Math.Round(1 * 1.2);
-            CritChance = 0.2 + 0.1;
+            attack = (int)Math.Round(4 * 1.5);
+            defense = (int)Math.Round(3 * 1.2);
+            CritChance = 0.3;
         }
     }
 }

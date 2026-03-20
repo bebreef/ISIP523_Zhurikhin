@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Pr16.Models.Entities;
-using System.Xml.Linq;
+﻿using Pr16.Models.Entities;
+using Pr16.Services;
 
 namespace Pr16.Models.Enemies
 {
@@ -15,28 +10,21 @@ namespace Pr16.Models.Enemies
         public Goblin()
         {
             Name = "Гоблин";
-            MaxHP = 15;
+            MaxHP = 30;
             HP = MaxHP;
-            attack = 3;
-            defense = 1;
+            attack = 4;
+            defense = 3;
         }
 
         public override void AttackPlayer(Player player)
         {
             int damage = attack;
-            if (Pr16.Services.Random.NextDouble() < CritChance)
+            if (Random.NextDouble() < CritChance)
             {
                 damage *= 2;
-                Console.WriteLine($"{Name} наносит критический удар!");
+                LogAction?.Invoke($"{Name} наносит КРИТ!");
             }
-            if (player.isDefending && Pr16.Services.Random.NextDouble() < 0.4)
-                Console.WriteLine($"{player.Name} уклоняется от атаки!");
-            else
-            {
-                damage = Math.Max(0, damage - player.equippedarmor.defense);
-                player.HP -= damage;
-                Console.WriteLine($"{Name} наносит {damage} урон(а) {player.Name}!");
-            }
+            base.AttackPlayer(player);   
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Pr16.ViewModels;
-using System.Collections.Specialized;
 using Pr16.Models.Items;
-using System.Windows.Media;
 using System;
 
 namespace Pr16.Pages
@@ -13,7 +11,20 @@ namespace Pr16.Pages
         public GamePage()
         {
             InitializeComponent();
-        }
+            if (DataContext is GameViewModel vm)
+            {
+                vm.PropertyChanged += (s, e) =>
+                {
+                    if (e.PropertyName == nameof(GameViewModel.LogText))
+                    {
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            ScrollLogToEnd();
+                        }));
+                    }
+                };
+            }
+        }   
 
         private void Attack_Click(object sender, RoutedEventArgs e)
         {
@@ -30,9 +41,9 @@ namespace Pr16.Pages
             if (DataContext is GameViewModel vm) vm.UseItem();
         }
 
-        private void SkipItem_Click(object sender, RoutedEventArgs e)
+        private void SecondChestAction_Click(object sender, RoutedEventArgs e)
         {
-            if (DataContext is GameViewModel vm) vm.SkipItem();
+            if (DataContext is GameViewModel vm) vm.SecondChestAction();
         }
 
         private void InventoryItem_Click(object sender, RoutedEventArgs e)
@@ -42,52 +53,13 @@ namespace Pr16.Pages
                 vm.UseInventoryItem(item);
             }
         }
-
-        private void LogListBox_Loaded(object sender, RoutedEventArgs e)
+        private void ScrollLogToEnd()
         {
-            if (DataContext is GameViewModel vm)
+            if (LogScrollViewer != null)
             {
-                // Подписка на изменение коллекции
-                vm.Log.CollectionChanged += Log_CollectionChanged;
-                // Скролл к концу после загрузки
-                Dispatcher.BeginInvoke(new Action(ScrollToEnd));
+                LogScrollViewer.ScrollToEnd();
             }
         }
 
-        private void Log_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            Dispatcher.BeginInvoke(new Action(ScrollToEnd));
-        }
-
-        private void ScrollToEnd()
-        {
-            if (LogListBox == null || LogListBox.Items.Count == 0) return;
-
-            // Проверяем, что мы уже в конце — если да, скроллим к последнему
-            var scrollViewer = FindVisualChild<ScrollViewer>(LogListBox);
-            if (scrollViewer != null)
-            {
-                scrollViewer.ScrollToEnd();
-            }
-            else
-            {
-                LogListBox.ScrollIntoView(LogListBox.Items[LogListBox.Items.Count - 1]);
-            }
-        }
-
-        private static T FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
-        {
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
-            {
-                var child = VisualTreeHelper.GetChild(obj, i);
-                if (child != null && child is T)
-                    return (T)child;
-
-                var childOfChild = FindVisualChild<T>(child);
-                if (childOfChild != null)
-                    return childOfChild;
-            }
-            return null;
-        }
     }
 }
