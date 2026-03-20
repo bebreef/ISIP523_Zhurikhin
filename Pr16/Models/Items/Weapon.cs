@@ -12,6 +12,8 @@ namespace Pr16.Models.Items
         public int basedmg;
         public int staminacost;
         public int durability = 20;
+        public string ImagePath { get; set; }
+        public string StatText => $"Урон: {basedmg}";
         public int dmg => durability > 0 ? basedmg : basedmg / 2;
     }
 

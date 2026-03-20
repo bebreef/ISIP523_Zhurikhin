@@ -20,21 +20,24 @@ namespace Pr16.Pages
             if (!(DataContext is StartViewModel vm)) return;
 
             Weapon weapon;
-            if (vm.SelectedSword) weapon = new Sword();
-            else if (vm.SelectedClaymore) weapon = new Claymore();
-            else weapon = new Axe();
+            if (vm.SelectedSword) weapon = new Sword() { ImagePath = "/Assets/sword.png" };
+            else if (vm.SelectedClaymore) weapon = new Claymore() { ImagePath = "/Assets/claymore.png" };
+            else weapon = new Axe() { ImagePath = "/Assets/axe.png" };
 
             Armor armor;
-            if (vm.SelectedLightArmor) armor = new Armor { name = "Лёгкая броня", defense = 1 };
-            else if (vm.SelectedMediumArmor) armor = new Armor { name = "Средняя броня", defense = 2 };
-            else armor = new Armor { name = "Тяжёлая броня", defense = 4 };
+            if (vm.SelectedLightArmor) armor = new Armor("Лёгкая броня", 1, "/Assets/lightarmor.png");
+            else if (vm.SelectedMediumArmor) armor = new Armor("Средняя броня", 2, "/Assets/mediumarmor.png");
+            else armor = new Armor("Тяжёлая броня", 4, "/Assets/heavyarmor.png");
 
             var player = new Player(
                 string.IsNullOrWhiteSpace(vm.PlayerName) ? "Безымянный" : vm.PlayerName,
-                30, weapon, armor);
+                100, weapon, armor);
+            player.Inventory.Add(weapon);
+            player.Inventory.Add(armor);
 
             var gameVM = new GameViewModel();
             gameVM.Player = player;
+
 
             gameVM.LogAdd($"Добро пожаловать, {player.Name}!");
             gameVM.LogAdd($"Оружие: {weapon.name} Броня: {armor.name}");

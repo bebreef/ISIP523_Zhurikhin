@@ -43,6 +43,17 @@ namespace Pr16.ViewModels
         public string HpText => $"{Player.HP}/{Player.MaxHP}";
         public string StaminaText => $"{Player.Stamina}/{Player.MaxStamina}";
 
+        private int _floor = 1;
+        public int Floor
+        {
+            get => _floor;
+            set
+            {
+                _floor = value;
+                OnPropertyChanged(nameof(Floor));
+            }
+        }
+
         public string EncounterImagePath
         {
             get
@@ -112,6 +123,8 @@ namespace Pr16.ViewModels
                 Enemy boss = EnemyFactory.CreateBoss();
                 CurrentEncounter = boss;
                 LogAdd($"!!! ПОЯВИЛСЯ БОСС: {boss.Name} !!!");
+                Floor++; 
+                OnPropertyChanged(nameof(Floor));
                 OnPropertyChanged(nameof(CurrentEncounter));
                 OnPropertyChanged(nameof(EncounterImagePath));
                 OnPropertyChanged(nameof(BackgroundImagePath));
@@ -169,7 +182,7 @@ namespace Pr16.ViewModels
             if (r == 2) return new Axe();
             if (r == 3) return new Food();
             if (r == 4) return new StaminaPotion { name = "Зелье выносливости", staminaamount = 8 };
-            return new Armor { name = "Железная броня", defense = 3 };
+            return new Armor("Железная броня", 3, "/Assets/unknown_enemy.png");
         }
 
         private string GetItemName(object item)
@@ -296,6 +309,7 @@ namespace Pr16.ViewModels
             ChestItem = null;
             OnPropertyChanged(nameof(HpText));
             OnPropertyChanged(nameof(StaminaText));
+            OnPropertyChanged(nameof(Player));
             NextTurn();
         }
 
