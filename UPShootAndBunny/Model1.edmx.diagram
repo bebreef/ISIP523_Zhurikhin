@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="98c0fc5dfb0840449331cf7efc896f33" Name="Diagram1" ZoomLevel="61">
+        <EntityTypeShape EntityType="uchebkaModel.Books" Width="1.5" PointX="5.25" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.Complaints" Width="1.5" PointX="7.5" PointY="13" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.Genres" Width="1.5" PointX="7.5" PointY="16.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.Manufacturers" Width="1.5" PointX="0.75" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.Products" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.ProductTypes" Width="1.5" PointX="0.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.ReadingLists" Width="1.5" PointX="10.5" PointY="13.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.Reviews" Width="1.5" PointX="7.5" PointY="9" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.RoleRequests" Width="1.5" PointX="5.25" PointY="8.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.Roles" Width="1.5" PointX="0.75" PointY="10.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.ServiceTypes" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.sysdiagrams" Width="1.5" PointX="8.375" PointY="5.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.UnfreezeRequests" Width="1.5" PointX="10.5" PointY="9" IsExpanded="true" />
+        <EntityTypeShape EntityType="uchebkaModel.Users" Width="1.5" PointX="3" PointY="12.375" IsExpanded="true" />
+        <AssociationConnector Association="uchebkaModel.FK__Books__AuthorId__45F365D3" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__Complaint__BookI__5AEE82B9" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__ReadingLi__BookI__5629CD9C" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__Reviews__BookId__4E88ABD4" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__UnfreezeR__BookI__68487DD7" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__Complaint__Revie__5BE2A6F2" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__Complaint__UserI__59FA5E80" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__Products__Manufa__160F4887" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__Products__Produc__151B244E" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__ReadingLi__UserI__5535A963" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__Reviews__UserId__4F7CD00D" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__RoleReque__Reque__628FA481" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__RoleReque__UserI__619B8048" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__Users__RoleId__3E52440B" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK__UnfreezeR__UserI__6754599E" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.BookGenres" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
