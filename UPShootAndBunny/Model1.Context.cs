@@ -30,14 +30,10 @@ namespace UPShootAndBunny
         public virtual DbSet<Books> Books { get; set; }
         public virtual DbSet<Complaints> Complaints { get; set; }
         public virtual DbSet<Genres> Genres { get; set; }
-        public virtual DbSet<Manufacturers> Manufacturers { get; set; }
-        public virtual DbSet<Products> Products { get; set; }
-        public virtual DbSet<ProductTypes> ProductTypes { get; set; }
         public virtual DbSet<ReadingLists> ReadingLists { get; set; }
         public virtual DbSet<Reviews> Reviews { get; set; }
         public virtual DbSet<RoleRequests> RoleRequests { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
-        public virtual DbSet<ServiceTypes> ServiceTypes { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<UnfreezeRequests> UnfreezeRequests { get; set; }
         public virtual DbSet<Users> Users { get; set; }

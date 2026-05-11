@@ -1,0 +1,29 @@
+﻿<Page x:Class="UPShootAndBunny.Pages.ReadingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="#F5F5F7">
+    <Grid>
+        <Border Background="#40FFFFFF" Padding="10" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 12 0 0" CornerRadius="8">
+            <TextBlock Text="⚠ Я не в силах преодолеть силу копирайта, так что довольствуемся первой главой"
+                       FontSize="11" Foreground="#555555" HorizontalAlignment="Center"/>
+        </Border>
+        <Grid Margin="20 60 20 20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Background="#FFFFFF" Padding="12" CornerRadius="12" BorderBrush="#E5E5EA" BorderThickness="1" HorizontalAlignment="Right" Width="220">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="A-" Width="40" Height="40" Margin="0 0 8 0" Background="#E5E5EA" BorderThickness="0" Click="Btn_DecreaseFont" FontWeight="Bold" FontSize="16"/>
+                    <Button Content="A+" Width="40" Height="40" Margin="0 0 8 0" Background="#E5E5EA" BorderThickness="0" Click="Btn_IncreaseFont" FontWeight="Bold" FontSize="16"/>
+                    <Button Content="← Назад" Height="40" Padding="16 0" Background="#007AFF" Foreground="White" BorderThickness="0" Click="Btn_Back" FontSize="14"/>
+                </StackPanel>
+            </Border>
+            <ScrollViewer Grid.Row="1" Margin="0 16 0 0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <Border Background="#FFFFFF" Padding="32" CornerRadius="16" BorderBrush="#E5E5EA" BorderThickness="1">
+                    <TextBlock x:Name="TbContent" FontFamily="Georgia, Times New Roman, serif" FontSize="18" LineHeight="28" Foreground="#1C1C1E" TextWrapping="Wrap" TextAlignment="Left"/>
+                </Border>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Page>

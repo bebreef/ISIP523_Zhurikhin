@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:UPShootAndBunny"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <DropShadowEffect x:Key="DropShadow" BlurRadius="10" ShadowDepth="2" Opacity="0.1" Color="#000000"/>
     </Application.Resources>
 </Application>

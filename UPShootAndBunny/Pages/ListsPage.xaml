@@ -1,14 +1,80 @@
 ﻿<Page x:Class="UPShootAndBunny.Pages.ListsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:UPShootAndBunny.Pages"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="ListsPage">
-
-    <Grid>
-        
+      Background="#F5F5F7">
+    <Page.Resources>
+        <Style x:Key="TabBtn" TargetType="Button">
+            <Setter Property="Background" Value="#E5E5EA"/>
+            <Setter Property="Foreground" Value="#8E8E93"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12 6"/>
+            <Setter Property="Margin" Value="0 0 6 0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#D1D1D6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <DropShadowEffect x:Key="DropShadow" BlurRadius="10" ShadowDepth="2" Opacity="0.1" Color="#000000"/>
+    </Page.Resources>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border Background="#FFFFFF" Padding="12" CornerRadius="12" Margin="0 0 0 16" Effect="{StaticResource DropShadow}">
+            <WrapPanel>
+                <Button x:Name="BtnPlans" Content="В планах" Click="Tab_Click" Tag="В планах" Style="{StaticResource TabBtn}"/>
+                <Button x:Name="BtnReading" Content="Читаю" Click="Tab_Click" Tag="Читаю" Style="{StaticResource TabBtn}"/>
+                <Button x:Name="BtnRead" Content="Прочитано" Click="Tab_Click" Tag="Прочитано" Style="{StaticResource TabBtn}"/>
+                <Button x:Name="BtnDropped" Content="Заброшено" Click="Tab_Click" Tag="Заброшено" Style="{StaticResource TabBtn}"/>
+                <Border Width="1" Background="#E5E5EA" Margin="12 4" Height="24"/>
+                <TextBox x:Name="TbSearch" Width="180" Padding="8" Margin="0 0 8 0" FontSize="14" BorderBrush="#E5E5EA" BorderThickness="1" VerticalContentAlignment="Center" TextChanged="TbSearch_TextChanged" ToolTip="Поиск"/>
+                <ComboBox x:Name="CbSort" Width="130" Margin="0 0 8 0" Padding="8" FontSize="14" BorderBrush="#E5E5EA" BorderThickness="1" SelectionChanged="CbSort_SelectionChanged">
+                    <ComboBoxItem Content="По имени" IsSelected="True"/>
+                    <ComboBoxItem Content="По рейтингу"/>
+                </ComboBox>
+                <ComboBox x:Name="CbGenre" Width="130" Padding="8" FontSize="14" BorderBrush="#E5E5EA" BorderThickness="1" SelectionChanged="CbGenre_SelectionChanged" DisplayMemberPath="GenreName" SelectedValuePath="GenreId"/>
+            </WrapPanel>
+        </Border>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="BooksList">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="#FFFFFF" Width="200" Margin="10" CornerRadius="12" Effect="{StaticResource DropShadow}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="240"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Image Source="{Binding Books.CoverPath}" Stretch="UniformToFill" Margin="0 0 0 8"/>
+                                <StackPanel Grid.Row="1">
+                                    <TextBlock Text="{Binding Books.Title}" FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis" Foreground="#1C1C1E"/>
+                                    <TextBlock Text="{Binding Books.Users.DisplayName}" FontSize="11" Foreground="#8E8E93" Margin="0 2 0 6"/>
+                                    <Button Content="Изменить статус" Height="26" Background="#E5E5EA" Foreground="#007AFF" BorderThickness="0" Click="Btn_MoveBook" Tag="{Binding}" FontSize="11" Cursor="Hand"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Page>
