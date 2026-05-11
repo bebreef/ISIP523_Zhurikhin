@@ -8,10 +8,8 @@ using System.Windows;
 
 namespace UPShootAndBunny
 {
-    /// <summary>
-    /// Логика взаимодействия для App.xaml
-    /// </summary>
     public partial class App : Application
     {
+        public static Users CurrentUser { get; set; }
     }
 }
