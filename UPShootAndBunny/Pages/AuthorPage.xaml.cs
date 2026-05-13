@@ -10,6 +10,15 @@ namespace UPShootAndBunny.Pages
         public AuthorPage()
         {
             InitializeComponent();
+
+            if (App.CurrentUser == null || App.CurrentUser.RoleId != 2)
+            {
+                MessageBox.Show("Доступ разрешен только авторам!", "Доступ запрещен", MessageBoxButton.OK, MessageBoxImage.Warning);
+                if (NavigationService?.CanGoBack == true)
+                    NavigationService.GoBack();
+                return;
+            }
+
             LoadBooks();
         }
 
