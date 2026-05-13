@@ -1,14 +1,236 @@
 ﻿<Page x:Class="UPShootAndBunny.Pages.AdminPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:UPShootAndBunny.Pages"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="AdminPage">
+      Background="#F5F5F7">
+    <Page.Resources>
+        <Style x:Key="RoundedButton" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="8 4"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-    <Grid>
-        
+        <Style x:Key="AdminTab" TargetType="RadioButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#8E8E93"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12 8"/>
+            <Setter Property="Margin" Value="0 0 12 0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Background" Value="#007AFF"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E5E5EA"/>
+                                <Setter Property="Foreground" Value="#1C1C1E"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <DropShadowEffect x:Key="DropShadow" BlurRadius="10" ShadowDepth="2" Opacity="0.1" Color="#000000"/>
+    </Page.Resources>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Background="#FFFFFF" Padding="16" CornerRadius="12" Margin="0 0 0 16" Effect="{StaticResource DropShadow}">
+            <WrapPanel>
+                <RadioButton x:Name="TabUsers" Content="Пользователи" Style="{StaticResource AdminTab}" Checked="Tab_Changed"/>
+                <RadioButton x:Name="TabBooks" Content="Книги" Style="{StaticResource AdminTab}" Checked="Tab_Changed"/>
+                <RadioButton x:Name="TabComplaints" Content="Жалобы" Style="{StaticResource AdminTab}" Checked="Tab_Changed"/>
+                <RadioButton x:Name="TabRoleRequests" Content="Заявки (Автор)" Style="{StaticResource AdminTab}" Checked="Tab_Changed"/>
+                <RadioButton x:Name="TabUnfreezeRequests" Content="Заявки (Разморозка)" Style="{StaticResource AdminTab}" Checked="Tab_Changed"/>
+            </WrapPanel>
+        </Border>
+
+        <Border x:Name="PanelUsers" Grid.Row="1" Visibility="Visible">
+            <DataGrid x:Name="GridUsers" AutoGenerateColumns="False" CanUserAddRows="False" BorderThickness="0" Background="Transparent" RowBackground="White" AlternatingRowBackground="#F9F9FB" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding UserId}" Width="50"/>
+                    <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="100"/>
+                    <DataGridTextColumn Header="Имя" Binding="{Binding DisplayName}" Width="*"/>
+                    <DataGridTextColumn Header="Роль" Binding="{Binding Roles.RoleName}" Width="100"/>
+
+                    <DataGridTemplateColumn Header="Статус" Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock x:Name="TbUserStatus" Text="Активен" Foreground="#34C759" FontWeight="SemiBold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsFrozen}" Value="True">
+                                                    <Setter Property="Text" Value="Заморожен"/>
+                                                    <Setter Property="Foreground" Value="#FF3B30"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Действия" Width="200">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Tag="{Binding UserId}" Click="Btn_ToggleUserFreeze" Margin="0 0 4 0">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+                                                <Setter Property="Content" Value="Заморозить"/>
+                                                <Setter Property="Background" Value="#FF3B30"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsFrozen}" Value="True">
+                                                        <Setter Property="Content" Value="Разморозить"/>
+                                                        <Setter Property="Background" Value="#34C759"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button Content="Сброс" Background="#8E8E93" Style="{StaticResource RoundedButton}" Click="Btn_ResetUser" Tag="{Binding UserId}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <Border x:Name="PanelBooks" Grid.Row="1" Visibility="Collapsed">
+            <DataGrid x:Name="GridBooks" AutoGenerateColumns="False" CanUserAddRows="False" BorderThickness="0" Background="Transparent" RowBackground="White" AlternatingRowBackground="#F9F9FB" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding BookId}" Width="50"/>
+                    <DataGridTextColumn Header="Название" Binding="{Binding Title}" Width="*"/>
+                    <DataGridTextColumn Header="Автор" Binding="{Binding Users.DisplayName}" Width="120"/>
+
+                    <DataGridTemplateColumn Header="Статус" Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock x:Name="TbBookStatus" Text="Опубликовано" Foreground="#34C759" FontWeight="SemiBold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsFrozen}" Value="True">
+                                                    <Setter Property="Text" Value="Заморожено"/>
+                                                    <Setter Property="Foreground" Value="#FF3B30"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Действия" Width="150">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Tag="{Binding BookId}" Click="Btn_ToggleBookFreeze">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+                                            <Setter Property="Content" Value="Заморозить"/>
+                                            <Setter Property="Background" Value="#FF3B30"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsFrozen}" Value="True">
+                                                    <Setter Property="Content" Value="Разморозить"/>
+                                                    <Setter Property="Background" Value="#34C759"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <Border x:Name="PanelComplaints" Grid.Row="1" Visibility="Collapsed">
+            <DataGrid x:Name="GridComplaints" AutoGenerateColumns="False" CanUserAddRows="False" BorderThickness="0" Background="Transparent" RowBackground="White" AlternatingRowBackground="#F9F9FB" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding ComplaintId}" Width="50"/>
+                    <DataGridTextColumn Header="От кого" Binding="{Binding UserName}" Width="120"/>
+                    <DataGridTextColumn Header="Тип" Binding="{Binding ComplaintType}" Width="80"/>
+                    <DataGridTextColumn Header="Объект" Binding="{Binding ObjectTitle}" Width="*"/>
+                    <DataGridTextColumn Header="Причина" Binding="{Binding Reason}" Width="*"/>
+                    <DataGridTextColumn Header="Дата" Binding="{Binding CreatedAt, StringFormat=dd.MM.yyyy}" Width="100"/>
+                    <DataGridTemplateColumn Header="Действия" Width="150">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Удалить объект" Background="#FF3B30" Style="{StaticResource RoundedButton}" Click="Btn_DeleteObject" Tag="{Binding ComplaintId}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <Border x:Name="PanelRoleRequests" Grid.Row="1" Visibility="Collapsed">
+            <DataGrid x:Name="GridRoleRequests" AutoGenerateColumns="False" CanUserAddRows="False" BorderThickness="0" Background="Transparent" RowBackground="White" AlternatingRowBackground="#F9F9FB" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding RequestId}" Width="50"/>
+                    <DataGridTextColumn Header="Пользователь" Binding="{Binding Users.DisplayName}" Width="*"/>
+                    <DataGridTextColumn Header="Причина" Binding="{Binding Reason}" Width="*"/>
+                    <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="100"/>
+                    <DataGridTextColumn Header="Дата" Binding="{Binding CreatedAt, StringFormat=dd.MM.yyyy}" Width="100"/>
+                    <DataGridTemplateColumn Header="Действия" Width="200">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Одобрить" Background="#34C759" Style="{StaticResource RoundedButton}" Click="Btn_ApproveRole" Tag="{Binding RequestId}" Margin="0 0 4 0"/>
+                                    <Button Content="Отклонить" Background="#FF3B30" Style="{StaticResource RoundedButton}" Click="Btn_RejectRole" Tag="{Binding RequestId}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <Border x:Name="PanelUnfreezeRequests" Grid.Row="1" Visibility="Collapsed">
+            <DataGrid x:Name="GridUnfreezeRequests" AutoGenerateColumns="False" CanUserAddRows="False" BorderThickness="0" Background="Transparent" RowBackground="White" AlternatingRowBackground="#F9F9FB" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding RequestId}" Width="50"/>
+                    <DataGridTextColumn Header="Пользователь" Binding="{Binding UserName}" Width="*"/>
+                    <DataGridTextColumn Header="Тип" Binding="{Binding RequestType}" Width="100"/>
+                    <DataGridTextColumn Header="Объект" Binding="{Binding ObjectTitle}" Width="*"/>
+                    <DataGridTextColumn Header="Причина" Binding="{Binding Reason}" Width="*"/>
+                    <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="100"/>
+                    <DataGridTemplateColumn Header="Действия" Width="200">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Разморозить" Background="#34C759" Style="{StaticResource RoundedButton}" Click="Btn_ApproveUnfreeze" Tag="{Binding RequestId}" Margin="0 0 4 0"/>
+                                    <Button Content="Отклонить" Background="#FF3B30" Style="{StaticResource RoundedButton}" Click="Btn_RejectUnfreeze" Tag="{Binding RequestId}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
     </Grid>
 </Page>
