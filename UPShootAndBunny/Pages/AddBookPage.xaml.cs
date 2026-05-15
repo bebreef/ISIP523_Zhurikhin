@@ -40,7 +40,7 @@ namespace UPShootAndBunny.Pages
 
                 if (ext != ".jpg" && ext != ".jpeg" && ext != ".png")
                 {
-                    MessageBox.Show("⚠ Поддерживаются только форматы: .jpg, .jpeg, .png");
+                    MessageBox.Show("Поддерживаются только форматы: .jpg, .jpeg, .png");
                     return;
                 }
 

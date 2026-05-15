@@ -10,25 +10,40 @@ namespace UPShootAndBunny.Pages
     {
         public AdminPage()
         {
-            InitializeComponent();
+            if (!IsUserAuthorized())
+                return;
 
+            InitializeComponent();
+            LoadData();
+        }
+
+        private bool IsUserAuthorized()
+        {
             if (App.CurrentUser == null)
             {
-                MessageBox.Show("Ошибка: Вы не вошли в систему!", "Доступ запрещен", MessageBoxButton.OK, MessageBoxImage.Warning);
-                NavigationService?.GoBack();
-                return;
+                MessageBox.Show("Ошибка: Вы не вошли в систему!", "Доступ запрещен",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                GoBack();
+                return false;
             }
 
             if (App.CurrentUser.RoleId != 3)
             {
-                MessageBox.Show("Ошибка: Доступ разрешен только администраторам!", "Доступ запрещен", MessageBoxButton.OK, MessageBoxImage.Warning);
-                NavigationService?.GoBack();
-                return;
+                MessageBox.Show("Ошибка: Доступ разрешен только администраторам!", "Доступ запрещен",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                GoBack();
+                return false;
             }
-            Loaded += (s, e) =>
-            {
-                TabUsers.IsChecked = true;
-            };
+
+            return true;
+        }
+
+        private void GoBack()
+        {
+            if (NavigationService?.CanGoBack == true)
+                NavigationService.GoBack();
+            else
+                ((MainWindow)Application.Current.MainWindow).MainFrame.Navigate(new CatalogPage());
         }
 
         private void LoadData()
