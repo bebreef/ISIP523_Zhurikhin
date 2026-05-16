@@ -36,6 +36,7 @@
           <Property Name="ReviewId" Type="int" />
           <Property Name="Reason" Type="nvarchar(max)" Nullable="false" />
           <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="TargetUserId" Type="int" />
         </EntityType>
         <EntityType Name="Genres">
           <Key>
@@ -65,6 +66,7 @@
           <Property Name="ReviewText" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Rating" Type="int" Nullable="false" />
           <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="IsFrozen" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="RoleRequests">
           <Key>
@@ -104,6 +106,7 @@
           <Property Name="Reason" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="ReviewId" Type="int" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -306,6 +309,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Complaints_Users_Target">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Complaints" Type="Self.Complaints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Complaints">
+              <PropertyRef Name="TargetUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UnfreezeRequests_Reviews">
+          <End Role="Reviews" Type="Self.Reviews" Multiplicity="0..1" />
+          <End Role="UnfreezeRequests" Type="Self.UnfreezeRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Reviews">
+              <PropertyRef Name="ReviewId" />
+            </Principal>
+            <Dependent Role="UnfreezeRequests">
+              <PropertyRef Name="ReviewId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Function Name="fn_diagramobjects" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int" />
         <Function Name="sp_alterdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
@@ -409,6 +436,14 @@
             <End Role="Roles" EntitySet="Roles" />
             <End Role="Users" EntitySet="Users" />
           </AssociationSet>
+          <AssociationSet Name="FK_Complaints_Users_Target" Association="Self.FK_Complaints_Users_Target">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Complaints" EntitySet="Complaints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UnfreezeRequests_Reviews" Association="Self.FK_UnfreezeRequests_Reviews">
+            <End Role="Reviews" EntitySet="Reviews" />
+            <End Role="UnfreezeRequests" EntitySet="UnfreezeRequests" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -446,6 +481,8 @@
           <NavigationProperty Name="Books" Relationship="Self.FK__Complaint__BookI__5AEE82B9" FromRole="Complaints" ToRole="Books" />
           <NavigationProperty Name="Reviews" Relationship="Self.FK__Complaint__Revie__5BE2A6F2" FromRole="Complaints" ToRole="Reviews" />
           <NavigationProperty Name="Users" Relationship="Self.FK__Complaint__UserI__59FA5E80" FromRole="Complaints" ToRole="Users" />
+          <Property Name="TargetUserId" Type="Int32" />
+          <NavigationProperty Name="Users1" Relationship="uchebkaModel.FK_Complaints_Users_Target" FromRole="Complaints" ToRole="Users" />
         </EntityType>
         <EntityType Name="Genres">
           <Key>
@@ -481,6 +518,8 @@
           <NavigationProperty Name="Books" Relationship="Self.FK__Reviews__BookId__4E88ABD4" FromRole="Reviews" ToRole="Books" />
           <NavigationProperty Name="Complaints" Relationship="Self.FK__Complaint__Revie__5BE2A6F2" FromRole="Reviews" ToRole="Complaints" />
           <NavigationProperty Name="Users" Relationship="Self.FK__Reviews__UserId__4F7CD00D" FromRole="Reviews" ToRole="Users" />
+          <Property Name="IsFrozen" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="UnfreezeRequests" Relationship="uchebkaModel.FK_UnfreezeRequests_Reviews" FromRole="Reviews" ToRole="UnfreezeRequests" />
         </EntityType>
         <EntityType Name="RoleRequests">
           <Key>
@@ -526,6 +565,8 @@
           <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Books" Relationship="Self.FK__UnfreezeR__BookI__68487DD7" FromRole="UnfreezeRequests" ToRole="Books" />
           <NavigationProperty Name="Users" Relationship="Self.FK__UnfreezeR__UserI__6754599E" FromRole="UnfreezeRequests" ToRole="Users" />
+          <Property Name="ReviewId" Type="Int32" />
+          <NavigationProperty Name="Reviews" Relationship="uchebkaModel.FK_UnfreezeRequests_Reviews" FromRole="UnfreezeRequests" ToRole="Reviews" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -546,6 +587,7 @@
           <NavigationProperty Name="RoleRequests" Relationship="Self.FK__RoleReque__UserI__619B8048" FromRole="Users" ToRole="RoleRequests" />
           <NavigationProperty Name="Roles" Relationship="Self.FK__Users__RoleId__3E52440B" FromRole="Users" ToRole="Roles" />
           <NavigationProperty Name="UnfreezeRequests" Relationship="Self.FK__UnfreezeR__UserI__6754599E" FromRole="Users" ToRole="UnfreezeRequests" />
+          <NavigationProperty Name="Complaints1" Relationship="uchebkaModel.FK_Complaints_Users_Target" FromRole="Users" ToRole="Complaints" />
         </EntityType>
         <Association Name="FK__Books__AuthorId__45F365D3">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
@@ -808,6 +850,14 @@
             <Parameter Name="new_diagramname" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_upgraddiagrams" />
+          <AssociationSet Name="FK_Complaints_Users_Target" Association="uchebkaModel.FK_Complaints_Users_Target">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Complaints" EntitySet="Complaints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UnfreezeRequests_Reviews" Association="uchebkaModel.FK_UnfreezeRequests_Reviews">
+            <End Role="Reviews" EntitySet="Reviews" />
+            <End Role="UnfreezeRequests" EntitySet="UnfreezeRequests" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="sp_helpdiagramdefinition_Result">
           <Property Type="Int32" Name="version" Nullable="true" />
@@ -820,6 +870,30 @@
           <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
           <Property Type="Int32" Name="OwnerID" Nullable="false" />
         </ComplexType>
+        <Association Name="FK_Complaints_Users_Target">
+          <End Type="uchebkaModel.Users" Role="Users" Multiplicity="0..1" />
+          <End Type="uchebkaModel.Complaints" Role="Complaints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Complaints">
+              <PropertyRef Name="TargetUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UnfreezeRequests_Reviews">
+          <End Type="uchebkaModel.Reviews" Role="Reviews" Multiplicity="0..1" />
+          <End Type="uchebkaModel.UnfreezeRequests" Role="UnfreezeRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Reviews">
+              <PropertyRef Name="ReviewId" />
+            </Principal>
+            <Dependent Role="UnfreezeRequests">
+              <PropertyRef Name="ReviewId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -843,6 +917,7 @@
           <EntitySetMapping Name="Complaints">
             <EntityTypeMapping TypeName="uchebkaModel.Complaints">
               <MappingFragment StoreEntitySet="Complaints">
+                <ScalarProperty Name="TargetUserId" ColumnName="TargetUserId" />
                 <ScalarProperty Name="ComplaintId" ColumnName="ComplaintId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="BookId" ColumnName="BookId" />
@@ -875,6 +950,7 @@
           <EntitySetMapping Name="Reviews">
             <EntityTypeMapping TypeName="uchebkaModel.Reviews">
               <MappingFragment StoreEntitySet="Reviews">
+                <ScalarProperty Name="IsFrozen" ColumnName="IsFrozen" />
                 <ScalarProperty Name="ReviewId" ColumnName="ReviewId" />
                 <ScalarProperty Name="BookId" ColumnName="BookId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
@@ -918,6 +994,7 @@
           <EntitySetMapping Name="UnfreezeRequests">
             <EntityTypeMapping TypeName="uchebkaModel.UnfreezeRequests">
               <MappingFragment StoreEntitySet="UnfreezeRequests">
+                <ScalarProperty Name="ReviewId" ColumnName="ReviewId" />
                 <ScalarProperty Name="RequestId" ColumnName="RequestId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="BookId" ColumnName="BookId" />

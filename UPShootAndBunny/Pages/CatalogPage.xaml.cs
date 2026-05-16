@@ -37,6 +37,7 @@ namespace UPShootAndBunny.Pages
                     .Include("Users")
                     .Include("Genres")
                     .Include("Reviews")
+                    .Where(b => b.IsFrozen == false)  
                     .AsQueryable();
 
                 query = query.Where(b => b.IsFrozen == false);

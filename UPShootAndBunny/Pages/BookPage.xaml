@@ -37,7 +37,8 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Users.DisplayName}" FontWeight="SemiBold" Foreground="#1C1C1E"/>
                                     <TextBlock Text="{Binding Rating, StringFormat=' ★ {0}/10'}" Foreground="#FF9500" Margin="8 0 0 0"/>
-                                    <Button Content="Жалоба" FontSize="11" Margin="8 0 0 0" Foreground="#FF3B30" Background="Transparent" BorderThickness="0" HorizontalAlignment="Right" Click="Btn_ComplaintReview" Tag="{Binding ReviewId}"/>
+                                    <Button x:Name="BtnComplaintReview" Content="Жалоба" FontSize="11" Margin="8 0 0 0" Foreground="#FF3B30" Background="Transparent" BorderThickness="0" HorizontalAlignment="Right" Click="Btn_ComplaintReview" Tag="{Binding ReviewId}"/>
+                                    <Button x:Name="BtnFreezeReview" Content="Заморозить" FontSize="11" Margin="8 0 0 0" Foreground="#FF9500" Background="Transparent" BorderThickness="0" Click="Btn_FreezeReview" Tag="{Binding ReviewId}" Visibility="Collapsed"/>
                                 </StackPanel>
                                 <TextBlock Grid.Row="1" Text="{Binding ReviewText}" TextWrapping="Wrap" Foreground="#1C1C1E" Margin="0 8 0 0"/>
                             </Grid>

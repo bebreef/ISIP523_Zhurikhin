@@ -10,112 +10,111 @@ namespace UPShootAndBunny.Pages
     {
         public AdminPage()
         {
-            if (!IsUserAuthorized())
-                return;
+            try
+            {
+                if (App.CurrentUser == null)
+                {
+                    MessageBox.Show("Ошибка: Вы не вошли в систему!", "Доступ запрещен",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    NavigateToCatalog();
+                    return;
+                }
 
-            InitializeComponent();
-            LoadData();
+                if (App.CurrentUser.RoleId != 3)
+                {
+                    MessageBox.Show("Ошибка: Доступ разрешен только администраторам!", "Доступ запрещен",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    NavigateToCatalog();
+                    return;
+                }
+
+                InitializeComponent();
+                LoadData();
+            }
+            catch (Exception ex)
+            {
+                NavigateToCatalog();
+            }
         }
 
-        private bool IsUserAuthorized()
+        private void NavigateToCatalog()
         {
-            if (App.CurrentUser == null)
+            try
             {
-                MessageBox.Show("Ошибка: Вы не вошли в систему!", "Доступ запрещен",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                GoBack();
-                return false;
+                var mw = Application.Current.MainWindow as MainWindow;
+                if (mw != null && mw.MainFrame != null)
+                {
+                    mw.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        mw.MainFrame.Navigate(new CatalogPage());
+                    }), System.Windows.Threading.DispatcherPriority.Background);
+                }
             }
-
-            if (App.CurrentUser.RoleId != 3)
-            {
-                MessageBox.Show("Ошибка: Доступ разрешен только администраторам!", "Доступ запрещен",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                GoBack();
-                return false;
-            }
-
-            return true;
-        }
-
-        private void GoBack()
-        {
-            if (NavigationService?.CanGoBack == true)
-                NavigationService.GoBack();
-            else
-                ((MainWindow)Application.Current.MainWindow).MainFrame.Navigate(new CatalogPage());
+            catch { }
         }
 
         private void LoadData()
         {
-            if (Core.Context == null)
-            {
-                MessageBox.Show("Ошибка подключения к базе данных", "Критическая ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
             try
             {
-                var users = Core.Context.Users
-                    .Include("Roles")         
-                    .ToList();
+                if (GridUsers != null)
+                    GridUsers.ItemsSource = Core.Context.Users.Include("Roles").ToList();
 
-                GridUsers.ItemsSource = users;
+                if (GridBooks != null)
+                    GridBooks.ItemsSource = Core.Context.Books.Include("Users").ToList();
 
-                var books = Core.Context.Books
-                    .Include("Users")         
-                    .ToList();
-
-                GridBooks.ItemsSource = books;
-
-                var complaints = Core.Context.Complaints
-                    .Include("Users")          
-                    .Include("Books")      
-                    .Include("Reviews")         
-                    .ToList();
-
-                var complaintsData = complaints.Select(c => new
+                if (GridReviews != null)
                 {
-                    c.ComplaintId,
-                    UserName = c.Users?.DisplayName ?? "Неизвестно",
-                    ComplaintType = c.BookId != null ? "Книга" : (c.ReviewId != null ? "Отзыв" : "Другое"),
-                    ObjectTitle = GetComplaintObjectTitle(c),
-                    c.Reason,
-                    c.CreatedAt
-                }).ToList();
+                    GridReviews.ItemsSource = Core.Context.Reviews
+                        .Include("Users")
+                        .Include("Books")
+                        .ToList();
+                }
 
-                GridComplaints.ItemsSource = complaintsData;
-
-                var roleRequests = Core.Context.RoleRequests
-                    .Include("Users")        
-                    .Where(r => r.Status == "Pending")
-                    .ToList();
-
-                GridRoleRequests.ItemsSource = roleRequests;
-
-                var unfreeze = Core.Context.UnfreezeRequests
-                    .Include("Users")          
-                    .ToList();
-
-                var unfreezeData = unfreeze.Select(r => new
+                if (GridComplaints != null)
                 {
-                    r.RequestId,
-                    UserName = r.Users?.DisplayName ?? "Неизвестно",
-                    RequestType = r.BookId != null ? "Книга" : "Аккаунт",
-                    ObjectTitle = GetUnfreezeObjectTitle(r),
-                    r.Reason,
-                    r.Status
-                }).ToList();
+                    var complaints = Core.Context.Complaints.Include("Users").ToList();
+                    GridComplaints.ItemsSource = complaints.Select(c => new
+                    {
+                        c.ComplaintId,
+                        c.UserId,
+                        UserName = c.Users != null && c.Users.DisplayName != null ? c.Users.DisplayName : "Неизвестно",
+                        ComplaintType = c.BookId != null ? "Книга" : (c.ReviewId != null ? "Отзыв" : "Пользователь"),
+                        ObjectId = c.BookId.HasValue ? (int?)c.BookId : (c.ReviewId.HasValue ? (int?)c.ReviewId : c.TargetUserId),
+                        ObjectTitle = GetComplaintObjectTitle(c),
+                        c.Reason,
+                        c.CreatedAt
+                    }).ToList();
+                }
 
-                GridUnfreezeRequests.ItemsSource = unfreezeData;
+                if (GridRoleRequests != null)
+                {
+                    GridRoleRequests.ItemsSource = Core.Context.RoleRequests
+                        .Include("Users")
+                        .Where(r => r.Status == "Pending")
+                        .ToList();
+                }
+
+                if (GridUnfreezeRequests != null)
+                {
+                    var unfreeze = Core.Context.UnfreezeRequests.Include("Users").ToList();
+                    GridUnfreezeRequests.ItemsSource = unfreeze.Select(r => new
+                    {
+                        r.RequestId,
+                        UserName = r.Users != null && r.Users.DisplayName != null ? r.Users.DisplayName : "Неизвестно",
+                        RequestType = r.BookId != null ? "Книга" : (r.ReviewId.HasValue ? "Отзыв" : "Аккаунт"),
+                        ObjectId = r.BookId.HasValue ? r.BookId.Value : (r.ReviewId.HasValue ? r.ReviewId.Value : 0),
+                        r.Reason,
+                        r.Status
+                    }).ToList();
+                }
             }
             catch (Exception ex)
             {
-                string errorMsg = $"Ошибка загрузки данных:\n\n{ex.Message}";
+                string msg = "Ошибка загрузки данных: " + ex.Message;
                 if (ex.InnerException != null)
-                    errorMsg += $"\n\nInner: {ex.InnerException.Message}";
-
-                MessageBox.Show(errorMsg, "Ошибка загрузки", MessageBoxButton.OK, MessageBoxImage.Error);
+                    msg += "\n\n" + ex.InnerException.Message;
+                MessageBox.Show(msg, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -125,21 +124,26 @@ namespace UPShootAndBunny.Pages
             {
                 if (c.BookId.HasValue)
                 {
-                    var book = Core.Context.Books.FirstOrDefault(x => x.BookId == c.BookId);
-                    return book?.Title ?? "Книга удалена";
+                    var b = Core.Context.Books.FirstOrDefault(x => x.BookId == c.BookId);
+                    return b != null && b.Title != null ? b.Title : "Книга удалена";
                 }
                 if (c.ReviewId.HasValue)
                 {
-                    var review = Core.Context.Reviews.FirstOrDefault(x => x.ReviewId == c.ReviewId);
-                    if (review?.ReviewText != null)
+                    var r = Core.Context.Reviews.FirstOrDefault(x => x.ReviewId == c.ReviewId);
+                    if (r != null && r.ReviewText != null)
                     {
-                        return review.ReviewText.Length > 30
-                            ? review.ReviewText.Substring(0, 30) + "..."
-                            : review.ReviewText;
+                        return r.ReviewText.Length > 30
+                            ? r.ReviewText.Substring(0, 30) + "..."
+                            : r.ReviewText;
                     }
                     return "Отзыв";
                 }
-                return "Пользователь";
+                if (c.TargetUserId.HasValue)
+                {
+                    var u = Core.Context.Users.FirstOrDefault(x => x.UserId == c.TargetUserId);
+                    return u != null && u.DisplayName != null ? u.DisplayName : "Пользователь";
+                }
+                return "Неизвестно";
             }
             catch
             {
@@ -147,40 +151,44 @@ namespace UPShootAndBunny.Pages
             }
         }
 
-        private string GetUnfreezeObjectTitle(UnfreezeRequests r)
+        private void Tab_Changed(object s, RoutedEventArgs e)
         {
             try
             {
-                if (r.BookId.HasValue)
-                {
-                    var book = Core.Context.Books.FirstOrDefault(x => x.BookId == r.BookId);
-                    return book?.Title ?? "Книга удалена";
-                }
-                return r.Users?.DisplayName ?? "Пользователь удален";
+                if (PanelUsers != null)
+                    PanelUsers.Visibility = TabUsers.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+
+                if (PanelBooks != null)
+                    PanelBooks.Visibility = TabBooks.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+
+                if (PanelReviews != null)
+                    PanelReviews.Visibility = TabReviews.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+
+                if (PanelComplaints != null)
+                    PanelComplaints.Visibility = TabComplaints.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+
+                if (PanelRoleRequests != null)
+                    PanelRoleRequests.Visibility = TabRoleRequests.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+
+                if (PanelUnfreezeRequests != null)
+                    PanelUnfreezeRequests.Visibility = TabUnfreezeRequests.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+
+                LoadData();
             }
-            catch
+            catch (Exception ex)
             {
-                return "Ошибка";
+                // Тихая обработка ошибки
             }
-        }
-
-        private void Tab_Changed(object sender, RoutedEventArgs e)
-        {
-            PanelUsers.Visibility = TabUsers.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-            PanelBooks.Visibility = TabBooks.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-            PanelComplaints.Visibility = TabComplaints.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-            PanelRoleRequests.Visibility = TabRoleRequests.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-            PanelUnfreezeRequests.Visibility = TabUnfreezeRequests.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-
-            LoadData(); 
         }
 
         private void Btn_ToggleUserFreeze(object s, RoutedEventArgs e)
         {
             try
             {
-                if (s is Button btn && btn.Tag is int userId)
+                var btn = s as Button;
+                if (btn != null && btn.Tag != null)
                 {
+                    int userId = (int)btn.Tag;
                     var user = Core.Context.Users.FirstOrDefault(u => u.UserId == userId);
                     if (user != null)
                     {
@@ -189,21 +197,19 @@ namespace UPShootAndBunny.Pages
                         LoadData();
                         MessageBox.Show(user.IsFrozen ? "Пользователь заморожен" : "Пользователь разморожен");
                     }
-                    else
-                    {
-                        MessageBox.Show("Пользователь не найден");
-                    }
                 }
             }
-            catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}"); }
+            catch (Exception ex) { MessageBox.Show("Ошибка: " + ex.Message); }
         }
 
         private void Btn_ResetUser(object s, RoutedEventArgs e)
         {
             try
             {
-                if (s is Button btn && btn.Tag is int userId)
+                var btn = s as Button;
+                if (btn != null && btn.Tag != null)
                 {
+                    int userId = (int)btn.Tag;
                     var user = Core.Context.Users.FirstOrDefault(u => u.UserId == userId);
                     if (user != null && user.RoleId != 3)
                     {
@@ -212,21 +218,19 @@ namespace UPShootAndBunny.Pages
                         LoadData();
                         MessageBox.Show("Роль сброшена до Читателя");
                     }
-                    else if (user?.RoleId == 3)
-                    {
-                        MessageBox.Show("Нельзя сбросить роль администратора");
-                    }
                 }
             }
-            catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}"); }
+            catch (Exception ex) { MessageBox.Show("Ошибка: " + ex.Message); }
         }
 
         private void Btn_ToggleBookFreeze(object s, RoutedEventArgs e)
         {
             try
             {
-                if (s is Button btn && btn.Tag is int bookId)
+                var btn = s as Button;
+                if (btn != null && btn.Tag != null)
                 {
+                    int bookId = (int)btn.Tag;
                     var book = Core.Context.Books.FirstOrDefault(b => b.BookId == bookId);
                     if (book != null)
                     {
@@ -235,54 +239,118 @@ namespace UPShootAndBunny.Pages
                         LoadData();
                         MessageBox.Show(book.IsFrozen ? "Книга заморожена" : "Книга разморожена");
                     }
-                    else
-                    {
-                        MessageBox.Show("Книга не найдена");
-                    }
                 }
             }
-            catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}"); }
+            catch (Exception ex) { MessageBox.Show("Ошибка: " + ex.Message); }
         }
 
-        private void Btn_DeleteObject(object s, RoutedEventArgs e)
+        private void Btn_ToggleReviewFreeze(object s, RoutedEventArgs e)
         {
             try
             {
-                if (s is Button btn && btn.Tag is int complaintId)
+                var btn = s as Button;
+                if (btn != null && btn.Tag != null)
                 {
-                    var comp = Core.Context.Complaints.FirstOrDefault(c => c.ComplaintId == complaintId);
-                    if (comp == null)
+                    int reviewId = (int)btn.Tag;
+                    var review = Core.Context.Reviews.FirstOrDefault(r => r.ReviewId == reviewId);
+                    if (review != null)
                     {
-                        MessageBox.Show("Жалоба не найдена");
-                        return;
+                        review.IsFrozen = !review.IsFrozen;
+                        Core.Context.SaveChanges();
+                        LoadData();
+                        MessageBox.Show(review.IsFrozen ? "Отзыв заморожен" : "Отзыв разморожен");
                     }
-
-                    if (comp.BookId.HasValue)
-                    {
-                        var book = Core.Context.Books.FirstOrDefault(b => b.BookId == comp.BookId);
-                        if (book != null) Core.Context.Books.Remove(book);
-                    }
-                    else if (comp.ReviewId.HasValue)
-                    {
-                        var review = Core.Context.Reviews.FirstOrDefault(r => r.ReviewId == comp.ReviewId);
-                        if (review != null) Core.Context.Reviews.Remove(review);
-                    }
-
-                    Core.Context.Complaints.Remove(comp);
-                    Core.Context.SaveChanges();
-                    LoadData();
-                    MessageBox.Show("Объект удален");
                 }
             }
-            catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}"); }
+            catch (Exception ex) { MessageBox.Show("Ошибка: " + ex.Message); }
+        }
+
+        private void Btn_DeleteComplaint(object s, RoutedEventArgs e)
+        {
+            try
+            {
+                var btn = s as Button;
+                if (btn != null && btn.Tag != null)
+                {
+                    int complaintId = (int)btn.Tag;
+                    var complaint = Core.Context.Complaints.FirstOrDefault(c => c.ComplaintId == complaintId);
+                    if (complaint != null)
+                    {
+                        Core.Context.Complaints.Remove(complaint);
+                        Core.Context.SaveChanges();
+                        LoadData();
+                        MessageBox.Show("Жалоба удалена");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string msg = "Ошибка: " + ex.Message;
+                if (ex.InnerException != null) msg += "\n\n" + ex.InnerException.Message;
+                MessageBox.Show(msg);
+            }
+        }
+
+        private void Btn_FreezeObjectFromComplaint(object s, RoutedEventArgs e)
+        {
+            try
+            {
+                var btn = s as Button;
+                if (btn != null && btn.Tag != null)
+                {
+                    int complaintId = (int)btn.Tag;
+                    var complaint = Core.Context.Complaints.FirstOrDefault(c => c.ComplaintId == complaintId);
+                    if (complaint == null) return;
+
+                    if (complaint.BookId.HasValue)
+                    {
+                        var book = Core.Context.Books.FirstOrDefault(b => b.BookId == complaint.BookId);
+                        if (book != null)
+                        {
+                            book.IsFrozen = true;
+                            Core.Context.SaveChanges();
+                            MessageBox.Show("Книга заморожена");
+                        }
+                    }
+                    else if (complaint.ReviewId.HasValue)
+                    {
+                        var review = Core.Context.Reviews.FirstOrDefault(r => r.ReviewId == complaint.ReviewId);
+                        if (review != null)
+                        {
+                            review.IsFrozen = true;
+                            Core.Context.SaveChanges();
+                            MessageBox.Show("Отзыв заморожен");
+                        }
+                    }
+                    else if (complaint.TargetUserId.HasValue)
+                    {
+                        var user = Core.Context.Users.FirstOrDefault(u => u.UserId == complaint.TargetUserId);
+                        if (user != null)
+                        {
+                            user.IsFrozen = true;
+                            Core.Context.SaveChanges();
+                            MessageBox.Show("Пользователь заморожен");
+                        }
+                    }
+                    LoadData();
+                }
+            }
+            catch (Exception ex)
+            {
+                string msg = "Ошибка: " + ex.Message;
+                if (ex.InnerException != null) msg += "\n\n" + ex.InnerException.Message;
+                MessageBox.Show(msg);
+            }
         }
 
         private void Btn_ApproveRole(object s, RoutedEventArgs e)
         {
             try
             {
-                if (s is Button btn && btn.Tag is int reqId)
+                var btn = s as Button;
+                if (btn != null && btn.Tag != null)
                 {
+                    int reqId = (int)btn.Tag;
                     var req = Core.Context.RoleRequests.FirstOrDefault(r => r.RequestId == reqId);
                     if (req != null)
                     {
@@ -295,15 +363,17 @@ namespace UPShootAndBunny.Pages
                     }
                 }
             }
-            catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}"); }
+            catch (Exception ex) { MessageBox.Show("Ошибка: " + ex.Message); }
         }
 
         private void Btn_RejectRole(object s, RoutedEventArgs e)
         {
             try
             {
-                if (s is Button btn && btn.Tag is int reqId)
+                var btn = s as Button;
+                if (btn != null && btn.Tag != null)
                 {
+                    int reqId = (int)btn.Tag;
                     var req = Core.Context.RoleRequests.FirstOrDefault(r => r.RequestId == reqId);
                     if (req != null)
                     {
@@ -314,15 +384,17 @@ namespace UPShootAndBunny.Pages
                     }
                 }
             }
-            catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}"); }
+            catch (Exception ex) { MessageBox.Show("Ошибка: " + ex.Message); }
         }
 
         private void Btn_ApproveUnfreeze(object s, RoutedEventArgs e)
         {
             try
             {
-                if (s is Button btn && btn.Tag is int reqId)
+                var btn = s as Button;
+                if (btn != null && btn.Tag != null)
                 {
+                    int reqId = (int)btn.Tag;
                     var req = Core.Context.UnfreezeRequests.FirstOrDefault(r => r.RequestId == reqId);
                     if (req != null)
                     {
@@ -331,6 +403,11 @@ namespace UPShootAndBunny.Pages
                         {
                             var book = Core.Context.Books.FirstOrDefault(b => b.BookId == req.BookId);
                             if (book != null) book.IsFrozen = false;
+                        }
+                        else if (req.ReviewId.HasValue)
+                        {
+                            var review = Core.Context.Reviews.FirstOrDefault(r => r.ReviewId == req.ReviewId);
+                            if (review != null) review.IsFrozen = false;
                         }
                         else
                         {
@@ -343,15 +420,17 @@ namespace UPShootAndBunny.Pages
                     }
                 }
             }
-            catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}"); }
+            catch (Exception ex) { MessageBox.Show("Ошибка: " + ex.Message); }
         }
 
         private void Btn_RejectUnfreeze(object s, RoutedEventArgs e)
         {
             try
             {
-                if (s is Button btn && btn.Tag is int reqId)
+                var btn = s as Button;
+                if (btn != null && btn.Tag != null)
                 {
+                    int reqId = (int)btn.Tag;
                     var req = Core.Context.UnfreezeRequests.FirstOrDefault(r => r.RequestId == reqId);
                     if (req != null)
                     {
@@ -362,7 +441,7 @@ namespace UPShootAndBunny.Pages
                     }
                 }
             }
-            catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}"); }
+            catch (Exception ex) { MessageBox.Show("Ошибка: " + ex.Message); }
         }
     }
 }

@@ -23,6 +23,7 @@ namespace UPShootAndBunny
             this.Reviews = new HashSet<Reviews>();
             this.RoleRequests = new HashSet<RoleRequests>();
             this.UnfreezeRequests = new HashSet<UnfreezeRequests>();
+            this.Complaints1 = new HashSet<Complaints>();
         }
     
         public int UserId { get; set; }
@@ -47,5 +48,7 @@ namespace UPShootAndBunny
         public virtual Roles Roles { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UnfreezeRequests> UnfreezeRequests { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Complaints> Complaints1 { get; set; }
     }
 }

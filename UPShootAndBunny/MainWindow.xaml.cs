@@ -23,9 +23,17 @@ namespace UPShootAndBunny
             UpdateSidebar(false);
             MainFrame.Navigate(new AuthPage());
         }
-        public void UpdateSidebar(bool active)
+        public void UpdateSidebar(bool isLoggedIn)
         {
-            SidebarBorder.Visibility = active ? Visibility.Visible : Visibility.Collapsed;
+            if (isLoggedIn)
+            {
+                SidebarBorder.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                SidebarBorder.Visibility = Visibility.Collapsed;
+                MainFrame.Navigate(new AuthPage());
+            }
         }
     }
 }

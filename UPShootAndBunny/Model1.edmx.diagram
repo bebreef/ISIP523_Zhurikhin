@@ -29,6 +29,8 @@
         <AssociationConnector Association="uchebkaModel.FK__Users__RoleId__3E52440B" ManuallyRouted="false" />
         <AssociationConnector Association="uchebkaModel.FK__UnfreezeR__UserI__6754599E" ManuallyRouted="false" />
         <AssociationConnector Association="uchebkaModel.BookGenres" ManuallyRouted="false" />
+        <AssociationConnector Association="uchebkaModel.FK_Complaints_Users_Target" />
+        <AssociationConnector Association="uchebkaModel.FK_UnfreezeRequests_Reviews" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

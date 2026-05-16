@@ -20,9 +20,11 @@ namespace UPShootAndBunny
         public Nullable<int> ReviewId { get; set; }
         public string Reason { get; set; }
         public System.DateTime CreatedAt { get; set; }
+        public Nullable<int> TargetUserId { get; set; }
     
         public virtual Books Books { get; set; }
         public virtual Reviews Reviews { get; set; }
         public virtual Users Users { get; set; }
+        public virtual Users Users1 { get; set; }
     }
 }

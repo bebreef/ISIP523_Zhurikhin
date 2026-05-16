@@ -18,6 +18,7 @@ namespace UPShootAndBunny
         public Reviews()
         {
             this.Complaints = new HashSet<Complaints>();
+            this.UnfreezeRequests = new HashSet<UnfreezeRequests>();
         }
     
         public int ReviewId { get; set; }
@@ -26,10 +27,13 @@ namespace UPShootAndBunny
         public string ReviewText { get; set; }
         public int Rating { get; set; }
         public System.DateTime CreatedAt { get; set; }
+        public bool IsFrozen { get; set; }
     
         public virtual Books Books { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Complaints> Complaints { get; set; }
         public virtual Users Users { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<UnfreezeRequests> UnfreezeRequests { get; set; }
     }
 }
