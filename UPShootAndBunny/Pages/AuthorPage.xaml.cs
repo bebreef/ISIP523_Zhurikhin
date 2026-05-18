@@ -9,41 +9,36 @@ namespace UPShootAndBunny.Pages
     {
         public AuthorPage()
         {
+            InitializeComponent();
+
             if (App.CurrentUser == null)
             {
-                MessageBox.Show("Ошибка: Вы не вошли в систему!", "Доступ запрещен",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                Application.Current.Dispatcher.BeginInvoke(new Action(() => NavigateToCatalog()));
+                MessageBox.Show("Вы не вошли в систему");
+                NavigateToCatalog();
                 return;
             }
 
             if (App.CurrentUser.RoleId != 2)
             {
-                MessageBox.Show("Ошибка: Доступ разрешен только авторам!", "Доступ запрещен",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                Application.Current.Dispatcher.BeginInvoke(new Action(() => NavigateToCatalog()));
+                MessageBox.Show("Доступ разрешен только авторам");
+                NavigateToCatalog();
                 return;
             }
 
-            InitializeComponent();
             LoadBooks();
         }
 
         private void NavigateToCatalog()
         {
-            var mw = Application.Current.MainWindow as MainWindow;
-            if (mw != null && mw.MainFrame != null)
-            {
-                mw.MainFrame.Navigate(new CatalogPage());
-            }
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            if (mainWindow != null) mainWindow.MainFrame.Navigate(new CatalogPage());
         }
 
         private void LoadBooks()
         {
             try
             {
-                var books = Core.Context.Books.Where(b => b.AuthorId == App.CurrentUser.UserId).ToList();
-                BooksList.ItemsSource = books;
+                BooksList.ItemsSource = Core.Context.Books.Where(b => b.AuthorId == App.CurrentUser.UserId).OrderByDescending(b => b.CreatedAt).ToList();
             }
             catch (Exception ex)
             {
@@ -53,40 +48,36 @@ namespace UPShootAndBunny.Pages
 
         private void Btn_AddBook(object s, RoutedEventArgs e)
         {
-            var mw = Application.Current.MainWindow as MainWindow;
-            if (mw != null)
-                mw.MainFrame.Navigate(new AddBookPage());
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            if (mainWindow != null) mainWindow.MainFrame.Navigate(new AddBookPage());
         }
 
         private void Btn_Edit(object s, RoutedEventArgs e)
         {
-            var btn = s as Button;
-            var book = btn != null ? btn.Tag as Books : null;
-            if (book != null)
-            {
-                var mw = Application.Current.MainWindow as MainWindow;
-                if (mw != null)
-                    mw.MainFrame.Navigate(new AddBookPage(book));
-            }
+            var button = s as Button;
+            var book = button != null ? button.Tag as Books : null;
+            if (book == null) return;
+
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            if (mainWindow != null) mainWindow.MainFrame.Navigate(new AddBookPage(book));
         }
 
         private void Btn_Dispute(object s, RoutedEventArgs e)
         {
-            var btn = s as Button;
-            var book = btn != null ? btn.Tag as Books : null;
+            var button = s as Button;
+            var book = button != null ? button.Tag as Books : null;
             if (book == null) return;
 
             bool exists = Core.Context.UnfreezeRequests.Any(r => r.UserId == App.CurrentUser.UserId && r.BookId == book.BookId && r.Status == "Pending");
-            if (!exists)
-            {
-                Core.Context.UnfreezeRequests.Add(new UnfreezeRequests { UserId = App.CurrentUser.UserId, BookId = book.BookId, Reason = "Оспаривание заморозки книги", Status = "Pending", CreatedAt = DateTime.Now });
-                Core.Context.SaveChanges();
-                MessageBox.Show("Заявка отправлена");
-            }
-            else
+            if (exists)
             {
                 MessageBox.Show("Заявка уже отправлена");
+                return;
             }
+
+            Core.Context.UnfreezeRequests.Add(new UnfreezeRequests { UserId = App.CurrentUser.UserId, BookId = book.BookId, Reason = "Прошу разморозить книгу", Status = "Pending", CreatedAt = DateTime.Now });
+            Core.Context.SaveChanges();
+            MessageBox.Show("Заявка отправлена");
         }
     }
 }

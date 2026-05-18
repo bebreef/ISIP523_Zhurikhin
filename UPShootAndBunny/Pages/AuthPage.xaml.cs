@@ -2,47 +2,127 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using UPShootAndBunny;
 
 namespace UPShootAndBunny.Pages
 {
     public partial class AuthPage : Page
     {
-        public AuthPage() { InitializeComponent(); }
+        private Users _frozenUser;
+
+        public AuthPage()
+        {
+            InitializeComponent();
+        }
+
         private void Btn_Login(object s, RoutedEventArgs e)
         {
             try
             {
                 string login = TbLogin.Text.Trim();
-                string pass = PbPass.Password;
-                if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(pass)) { ShowErr("Заполните все поля"); return; }
-                var user = Core.Context.Users.FirstOrDefault(u => u.Login == login && u.PasswordHash == pass);
-                if (user == null) { ShowErr("Неверные данные"); return; }
-                if (user.IsFrozen) { ShowErr("Аккаунт заморожен"); return; }
+                string password = PbPass.Password;
+
+                if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
+                {
+                    ShowError("Заполните все поля");
+                    return;
+                }
+
+                var user = Core.Context.Users.FirstOrDefault(u => u.Login == login && u.PasswordHash == password);
+                if (user == null)
+                {
+                    _frozenUser = null;
+                    UnfreezePanel.Visibility = Visibility.Collapsed;
+                    ShowError("Неверный логин или пароль");
+                    return;
+                }
+
+                if (user.IsFrozen)
+                {
+                    _frozenUser = user;
+                    UnfreezePanel.Visibility = Visibility.Visible;
+                    return;
+                }
+
                 App.CurrentUser = user;
-                ((MainWindow)Application.Current.MainWindow).UpdateSidebar(true);
-                ((MainWindow)Application.Current.MainWindow).MainFrame.Navigate(new CatalogPage());
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+                mainWindow.UpdateSidebar(true);
+                mainWindow.MainFrame.Navigate(new CatalogPage());
             }
-            catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}", "Сбой", MessageBoxButton.OK, MessageBoxImage.Error); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка входа: " + ex.Message);
+            }
         }
+
         private void Btn_Register(object s, RoutedEventArgs e)
         {
             try
             {
                 string login = TbLogin.Text.Trim();
-                string pass = PbPass.Password;
-                if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(pass)) { ShowErr("Заполните все поля"); return; }
-                if (Core.Context.Users.Any(x => x.Login == login)) { ShowErr("Логин занят"); return; }
-                var newUser = new Users { Login = login, PasswordHash = pass, Email = login + "@mail.ru", DisplayName = login, RoleId = 1, IsFrozen = false, CreatedAt = DateTime.Now };
-                Core.Context.Users.Add(newUser);
+                string password = PbPass.Password;
+
+                if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
+                {
+                    ShowError("Заполните все поля");
+                    return;
+                }
+
+                if (Core.Context.Users.Any(x => x.Login == login))
+                {
+                    ShowError("Логин занят");
+                    return;
+                }
+
+                var user = new Users { Login = login, PasswordHash = password, Email = login + "@mail.ru", DisplayName = login, RoleId = 1, IsFrozen = false, CreatedAt = DateTime.Now };
+                Core.Context.Users.Add(user);
                 Core.Context.SaveChanges();
-                App.CurrentUser = newUser;
-                ((MainWindow)Application.Current.MainWindow).UpdateSidebar(true);
-                ((MainWindow)Application.Current.MainWindow).MainFrame.Navigate(new CatalogPage());
+
+                App.CurrentUser = user;
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+                mainWindow.UpdateSidebar(true);
+                mainWindow.MainFrame.Navigate(new CatalogPage());
             }
-            catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}", "Сбой", MessageBoxButton.OK, MessageBoxImage.Error); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка регистрации: " + ex.Message);
+            }
         }
-        private void Btn_Exit(object s, RoutedEventArgs e) { Application.Current.Shutdown(); }
-        private void ShowErr(string msg) { TbError.Text = msg; TbError.Visibility = Visibility.Visible; }
+
+        private void Btn_UnfreezeRequest(object s, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_frozenUser == null)
+                {
+                    ShowError("Сначала введите данные замороженного аккаунта и нажмите Войти");
+                    return;
+                }
+
+                bool exists = Core.Context.UnfreezeRequests.Any(r => r.UserId == _frozenUser.UserId && !r.BookId.HasValue && !r.ReviewId.HasValue && r.Status == "Pending");
+                if (exists)
+                {
+                    MessageBox.Show("Заявка уже ожидает рассмотрения");
+                    return;
+                }
+
+                string reason = string.IsNullOrWhiteSpace(TbUnfreezeReason.Text) ? "Прошу разморозить аккаунт" : TbUnfreezeReason.Text.Trim();
+                Core.Context.UnfreezeRequests.Add(new UnfreezeRequests { UserId = _frozenUser.UserId, Reason = reason, Status = "Pending", CreatedAt = DateTime.Now });
+                Core.Context.SaveChanges();
+
+                MessageBox.Show("Заявка на разморозку отправлена");
+                UnfreezePanel.Visibility = Visibility.Collapsed;
+                _frozenUser = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка отправки заявки: " + ex.Message);
+            }
+        }
+
+        private void ShowError(string message)
+        {
+            TbError.Text = message;
+            TbError.Visibility = Visibility.Visible;
+        }
     }
 }

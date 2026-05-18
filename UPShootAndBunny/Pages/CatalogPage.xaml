@@ -1,7 +1,7 @@
-﻿<Page x:Class="UPShootAndBunny.Pages.CatalogPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Background="#F5F5F7">
+﻿<Page x:Class="UPShootAndBunny.Pages.CatalogPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="#F5F5F7">
+    <Page.Resources>
+        <DropShadowEffect x:Key="DropShadow" BlurRadius="10" ShadowDepth="2" Opacity="0.1" Color="#000000"/>
+    </Page.Resources>
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -11,11 +11,12 @@
             <WrapPanel Orientation="Horizontal">
                 <TextBox x:Name="TbTitle" Width="200" Padding="8" Margin="0 0 10 0" FontSize="14" BorderBrush="#D1D1D6" BorderThickness="1" VerticalContentAlignment="Center" TextChanged="TbTitle_TextChanged" ToolTip="Поиск по названию"/>
                 <TextBox x:Name="TbAuthor" Width="200" Padding="8" Margin="0 0 10 0" FontSize="14" BorderBrush="#D1D1D6" BorderThickness="1" VerticalContentAlignment="Center" TextChanged="TbAuthor_TextChanged" ToolTip="Поиск по автору"/>
-                <ComboBox x:Name="CbGenre" Width="150" Margin="0 0 10 0" Padding="8" FontSize="14" BorderBrush="#D1D1D6" BorderThickness="1" SelectionChanged="CbGenre_SelectionChanged" DisplayMemberPath="GenreName" SelectedValuePath="GenreId"/>
-                <ComboBox x:Name="CbSort" Width="150" Margin="0 0 10 0" Padding="8" FontSize="14" BorderBrush="#D1D1D6" BorderThickness="1" SelectionChanged="CbSort_SelectionChanged">
+                <ComboBox x:Name="CbGenre" Width="160" Margin="0 0 10 0" Padding="8" FontSize="14" BorderBrush="#D1D1D6" BorderThickness="1" SelectionChanged="CbGenre_SelectionChanged" DisplayMemberPath="GenreName" SelectedValuePath="GenreId" ToolTip="Жанр"/>
+                <ComboBox x:Name="CbSort" Width="160" Margin="0 0 10 0" Padding="8" FontSize="14" BorderBrush="#D1D1D6" BorderThickness="1" SelectionChanged="CbSort_SelectionChanged" ToolTip="Сортировка">
                     <ComboBoxItem Content="По имени (А-Я)" IsSelected="True"/>
                     <ComboBoxItem Content="По рейтингу"/>
                 </ComboBox>
+                <Button Content="Сбросить" Height="36" Padding="14 0" Background="#E5E5EA" Foreground="#1C1C1E" BorderThickness="0" Click="Btn_ResetFilters" Cursor="Hand"/>
             </WrapPanel>
         </Border>
         <ListView Grid.Row="1" x:Name="BooksList" BorderThickness="0" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">

@@ -9,12 +9,14 @@ namespace UPShootAndBunny.Pages
 {
     public partial class CatalogPage : Page
     {
+        private bool _isReady;
         private List<Books> _allBooks = new List<Books>();
 
         public CatalogPage()
         {
             InitializeComponent();
             LoadGenres();
+            _isReady = true;
             LoadBooks();
         }
 
@@ -22,54 +24,55 @@ namespace UPShootAndBunny.Pages
         {
             try
             {
-                var genres = Core.Context.Genres.ToList();
-                CbGenre.ItemsSource = genres;
-                CbGenre.SelectedIndex = -1; 
+                CbGenre.ItemsSource = Core.Context.Genres.OrderBy(g => g.GenreName).ToList();
+                CbGenre.SelectedIndex = -1;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка загрузки жанров: " + ex.Message);
+            }
         }
 
         private void LoadBooks()
         {
+            if (!_isReady || BooksList == null) return;
+
             try
             {
-                var query = Core.Context.Books
+                var books = Core.Context.Books
                     .Include("Users")
                     .Include("Genres")
                     .Include("Reviews")
-                    .Where(b => b.IsFrozen == false)  
-                    .AsQueryable();
+                    .Where(b => !b.IsFrozen)
+                    .ToList();
 
-                query = query.Where(b => b.IsFrozen == false);
+                books = books.Where(b => b.Users == null || !b.Users.IsFrozen).ToList();
 
                 if (!string.IsNullOrWhiteSpace(TbTitle.Text))
                 {
-                    string search = TbTitle.Text.ToLower();
-                    query = query.Where(b => b.Title != null && b.Title.ToLower().Contains(search));
+                    string title = TbTitle.Text.Trim().ToLower();
+                    books = books.Where(b => !string.IsNullOrWhiteSpace(b.Title) && b.Title.ToLower().Contains(title)).ToList();
                 }
 
                 if (!string.IsNullOrWhiteSpace(TbAuthor.Text))
                 {
-                    string author = TbAuthor.Text.ToLower();
-                    query = query.Where(b => b.Users != null && b.Users.DisplayName != null &&
-                                            b.Users.DisplayName.ToLower().Contains(author));
+                    string author = TbAuthor.Text.Trim().ToLower();
+                    books = books.Where(b => b.Users != null && !string.IsNullOrWhiteSpace(b.Users.DisplayName) && b.Users.DisplayName.ToLower().Contains(author)).ToList();
                 }
 
                 if (CbGenre.SelectedValue != null)
                 {
-                    int genreId = (int)CbGenre.SelectedValue;
-                    query = query.Where(b => b.Genres != null && b.Genres.Any(g => g.GenreId == genreId));
+                    int genreId = Convert.ToInt32(CbGenre.SelectedValue);
+                    books = books.Where(b => b.Genres != null && b.Genres.Any(g => g.GenreId == genreId)).ToList();
                 }
 
-                var books = query.ToList();
-
-                var sortItem = CbSort?.SelectedItem as ComboBoxItem;
-                string sortValue = sortItem?.Content.ToString();
+                string sortValue = "";
+                var sortItem = CbSort.SelectedItem as ComboBoxItem;
+                if (sortItem != null && sortItem.Content != null) sortValue = sortItem.Content.ToString();
 
                 if (sortValue == "По рейтингу")
                 {
-                    _allBooks = books.OrderByDescending(b =>
-                        b.Reviews != null && b.Reviews.Any() ? b.Reviews.Average(r => r.Rating) : 0).ToList();
+                    _allBooks = books.OrderByDescending(GetRating).ThenBy(b => b.Title ?? "").ToList();
                 }
                 else
                 {
@@ -80,49 +83,86 @@ namespace UPShootAndBunny.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Каталог: {ex.Message}");
+                MessageBox.Show("Ошибка каталога: " + ex.Message);
             }
         }
 
-        private void TbTitle_TextChanged(object s, TextChangedEventArgs e) { LoadBooks(); }
-        private void TbAuthor_TextChanged(object s, TextChangedEventArgs e) { LoadBooks(); }
+        private double GetRating(Books book)
+        {
+            if (book == null || book.Reviews == null) return 0;
+
+            var reviews = book.Reviews.Where(r => !r.IsFrozen).ToList();
+            if (!reviews.Any()) return 0;
+
+            return reviews.Average(r => r.Rating);
+        }
+
+        private void TbTitle_TextChanged(object s, TextChangedEventArgs e)
+        {
+            LoadBooks();
+        }
+
+        private void TbAuthor_TextChanged(object s, TextChangedEventArgs e)
+        {
+            LoadBooks();
+        }
 
         private void CbGenre_SelectionChanged(object s, SelectionChangedEventArgs e)
         {
-            if (CbGenre.IsLoaded)
-                LoadBooks();
+            LoadBooks();
         }
 
         private void CbSort_SelectionChanged(object s, SelectionChangedEventArgs e)
         {
-            if (CbSort.IsLoaded)
-                LoadBooks();
+            LoadBooks();
+        }
+
+        private void Btn_ResetFilters(object s, RoutedEventArgs e)
+        {
+            TbTitle.Text = "";
+            TbAuthor.Text = "";
+            CbGenre.SelectedIndex = -1;
+            CbSort.SelectedIndex = 0;
+            LoadBooks();
         }
 
         private void Btn_Read(object s, RoutedEventArgs e)
         {
-            var btn = s as Button;
-            var book = btn.DataContext as Books;
-            if (book != null)
-            {
-                ((MainWindow)Application.Current.MainWindow).MainFrame.Navigate(new BookPage(book));
-            }
+            var button = s as Button;
+            var book = button != null ? button.DataContext as Books : null;
+            if (book == null) return;
+
+            ((MainWindow)Application.Current.MainWindow).MainFrame.Navigate(new BookPage(book));
         }
 
         private void Btn_AddToList(object s, RoutedEventArgs e)
         {
-            var btn = s as Button;
-            var book = btn.DataContext as Books;
-            if (book != null)
+            try
             {
-                bool exists = Core.Context.ReadingLists.Any(r => r.UserId == App.CurrentUser.UserId && r.BookId == book.BookId);
-                if (!exists)
+                if (App.CurrentUser == null)
                 {
-                    Core.Context.ReadingLists.Add(new ReadingLists { UserId = App.CurrentUser.UserId, BookId = book.BookId, Status = "В планах", AddedAt = DateTime.Now });
-                    Core.Context.SaveChanges();
-                    MessageBox.Show("Книга добавлена в список 'В планах'");
+                    MessageBox.Show("Сначала войдите в аккаунт");
+                    return;
                 }
-                else { MessageBox.Show("Книга уже есть в ваших списках"); }
+
+                var button = s as Button;
+                var book = button != null ? button.DataContext as Books : null;
+                if (book == null) return;
+
+                bool exists = Core.Context.ReadingLists.Any(r => r.UserId == App.CurrentUser.UserId && r.BookId == book.BookId);
+                if (exists)
+                {
+                    MessageBox.Show("Книга уже есть в ваших списках");
+                    return;
+                }
+
+                Core.Context.ReadingLists.Add(new ReadingLists { UserId = App.CurrentUser.UserId, BookId = book.BookId, Status = "В планах", AddedAt = DateTime.Now });
+                Core.Context.SaveChanges();
+                MessageBox.Show("Книга добавлена в список");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка добавления в список: " + ex.Message);
             }
         }
     }

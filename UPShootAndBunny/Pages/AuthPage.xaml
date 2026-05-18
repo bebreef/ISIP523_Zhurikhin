@@ -1,18 +1,24 @@
-﻿<Page x:Class="UPShootAndBunny.Pages.AuthPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Background="#F5F5F7">
-    <Grid>
-        <Border Background="#FFFFFF" Width="360" Height="440" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="28" CornerRadius="16">
-            <StackPanel>
-                <TextBlock Text="Добро пожаловать" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Foreground="#1C1C1E" Margin="0 0 0 6"/>
-                <TextBlock Text="Вход или создание аккаунта" FontSize="13" HorizontalAlignment="Center" Foreground="#8E8E93" Margin="0 0 0 22"/>
-                <TextBox x:Name="TbLogin" Height="42" Padding="10 0" FontSize="14" BorderBrush="#D1D1D6" BorderThickness="1" Margin="0 0 0 10" Foreground="#1C1C1E" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"/>
-                <PasswordBox x:Name="PbPass" Height="42" Padding="10 0" FontSize="14" BorderBrush="#D1D1D6" BorderThickness="1" Margin="0 0 0 18" Foreground="#1C1C1E" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"/>
-                <Button Content="Войти" Height="42" Background="#007AFF" Foreground="White" FontSize="14" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand" Click="Btn_Login" Margin="0 0 0 8"/>
-                <Button Content="Регистрация" Height="42" Background="Transparent" Foreground="#007AFF" FontSize="14" FontWeight="SemiBold" BorderThickness="1" BorderBrush="#007AFF" Cursor="Hand" Click="Btn_Register"/>
-                <TextBlock x:Name="TbError" Foreground="#FF3B30" FontSize="12" HorizontalAlignment="Center" Margin="0 14 0 0" Visibility="Collapsed"/>
-            </StackPanel>
-        </Border>
-    </Grid>
-</Page> 
+﻿<Page x:Class="UPShootAndBunny.Pages.AuthPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="#F5F5F7">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid MinHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}">
+            <Border Background="#FFFFFF" Width="380" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="28" CornerRadius="16" Margin="20">
+                <StackPanel>
+                    <TextBlock Text="Добро пожаловать" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Foreground="#1C1C1E" Margin="0 0 0 6"/>
+                    <TextBlock Text="Вход или создание аккаунта" FontSize="13" HorizontalAlignment="Center" Foreground="#8E8E93" Margin="0 0 0 22"/>
+                    <TextBlock Text="Логин" FontSize="12" Foreground="#8E8E93" Margin="0 0 0 4"/>
+                    <TextBox x:Name="TbLogin" Height="42" Padding="10 0" FontSize="14" BorderBrush="#D1D1D6" BorderThickness="1" Margin="0 0 0 10" Foreground="#1C1C1E" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"/>
+                    <TextBlock Text="Пароль" FontSize="12" Foreground="#8E8E93" Margin="0 0 0 4"/>
+                    <PasswordBox x:Name="PbPass" Height="42" Padding="10 0" FontSize="14" BorderBrush="#D1D1D6" BorderThickness="1" Margin="0 0 0 18" Foreground="#1C1C1E" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"/>
+                    <Button Content="Войти" Height="42" Background="#007AFF" Foreground="White" FontSize="14" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand" Click="Btn_Login" Margin="0 0 0 8"/>
+                    <Button Content="Регистрация" Height="42" Background="Transparent" Foreground="#007AFF" FontSize="14" FontWeight="SemiBold" BorderThickness="1" BorderBrush="#007AFF" Cursor="Hand" Click="Btn_Register"/>
+                    <StackPanel x:Name="UnfreezePanel" Visibility="Collapsed" Margin="0 16 0 0">
+                        <TextBlock Text="Аккаунт заморожен. Можно отправить заявку на разморозку." TextWrapping="Wrap" Foreground="#FF3B30" FontSize="12" Margin="0 0 0 8"/>
+                        <TextBox x:Name="TbUnfreezeReason" Height="70" Padding="10" Text="Прошу разморозить аккаунт" FontSize="13" BorderBrush="#D1D1D6" BorderThickness="1" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0 0 0 8"/>
+                        <Button Content="Подать заявку на разморозку" MinHeight="40" Padding="10 8" Background="#FF9500" Foreground="White" FontSize="13" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand" Click="Btn_UnfreezeRequest"/>
+                    </StackPanel>
+                    <TextBlock x:Name="TbError" Foreground="#FF3B30" FontSize="12" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 14 0 0" Visibility="Collapsed"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</Page>

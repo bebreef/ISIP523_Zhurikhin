@@ -14,52 +14,50 @@ namespace UPShootAndBunny.Pages
         {
             InitializeComponent();
             _book = book;
-            if (_book != null)
-            {
-                TbTitle.Text = _book.Title;
-                TbDesc.Text = _book.Description;
-                TbCover.Text = _book.CoverPath;
-                TbContent.Text = _book.Content;
-                BtnSave.Content = "Обновить";
-            }
+            LoadBook();
+        }
+
+        private void LoadBook()
+        {
+            if (_book == null) return;
+
+            TbTitle.Text = _book.Title;
+            TbDesc.Text = _book.Description;
+            TbCover.Text = _book.CoverPath;
+            TbContent.Text = _book.Content;
+            BtnSave.Content = "Обновить";
         }
 
         private void Btn_SelectCover(object s, RoutedEventArgs e)
         {
-            var dlg = new OpenFileDialog
+            var dialog = new OpenFileDialog { Filter = "Изображения|*.jpg;*.jpeg;*.png", Title = "Выберите обложку книги" };
+
+            if (dialog.ShowDialog() != true) return;
+
+            string sourcePath = dialog.FileName;
+            string extension = Path.GetExtension(sourcePath).ToLower();
+
+            if (extension != ".jpg" && extension != ".jpeg" && extension != ".png")
             {
-                Filter = "Изображения|*.jpg;*.jpeg;*.png",
-                Title = "Выберите обложку книги"
-            };
+                MessageBox.Show("Поддерживаются только форматы: .jpg, .jpeg, .png");
+                return;
+            }
 
-            if (dlg.ShowDialog() == true)
+            string coversDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "covers");
+            Directory.CreateDirectory(coversDir);
+
+            string uniqueName = "book_" + Guid.NewGuid().ToString("N").Substring(0, 8) + extension;
+            string destPath = Path.Combine(coversDir, uniqueName);
+
+            try
             {
-                string sourcePath = dlg.FileName;
-                string fileName = Path.GetFileName(sourcePath);
-                string ext = Path.GetExtension(fileName).ToLower();
-
-                if (ext != ".jpg" && ext != ".jpeg" && ext != ".png")
-                {
-                    MessageBox.Show("Поддерживаются только форматы: .jpg, .jpeg, .png");
-                    return;
-                }
-
-                string coversDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Covers");
-                if (!Directory.Exists(coversDir)) Directory.CreateDirectory(coversDir);
-
-                string uniqueName = $"book_{Guid.NewGuid().ToString().Substring(0, 8)}{ext}";
-                string destPath = Path.Combine(coversDir, uniqueName);
-
-                try
-                {
-                    File.Copy(sourcePath, destPath, true);
-                    TbCover.Text = $"/Covers/{uniqueName}";
-                    MessageBox.Show("✓ Обложка успешно загружена!");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"✗ Ошибка: {ex.Message}");
-                }
+                File.Copy(sourcePath, destPath, true);
+                TbCover.Text = new Uri(destPath).AbsoluteUri;
+                MessageBox.Show("Обложка загружена");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка загрузки обложки: " + ex.Message);
             }
         }
 
@@ -67,8 +65,23 @@ namespace UPShootAndBunny.Pages
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(TbTitle.Text)) { MessageBox.Show("Введите название"); return; }
-                if (string.IsNullOrWhiteSpace(TbCover.Text)) { MessageBox.Show("Выберите обложку"); return; }
+                if (App.CurrentUser == null)
+                {
+                    MessageBox.Show("Сначала войдите в аккаунт");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(TbTitle.Text))
+                {
+                    MessageBox.Show("Введите название");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(TbCover.Text))
+                {
+                    MessageBox.Show("Выберите обложку");
+                    return;
+                }
 
                 if (_book == null)
                 {
@@ -76,21 +89,24 @@ namespace UPShootAndBunny.Pages
                     Core.Context.Books.Add(_book);
                 }
 
-                _book.Title = TbTitle.Text;
-                _book.Description = TbDesc.Text;
-                _book.CoverPath = TbCover.Text;
-                _book.Content = TbContent.Text;
+                _book.Title = TbTitle.Text.Trim();
+                _book.Description = TbDesc.Text.Trim();
+                _book.CoverPath = TbCover.Text.Trim();
+                _book.Content = string.IsNullOrWhiteSpace(TbContent.Text) ? "Текст отсутствует" : TbContent.Text;
 
                 Core.Context.SaveChanges();
-                MessageBox.Show("✓ Успешно сохранено!");
+                MessageBox.Show("Книга сохранена");
                 ((MainWindow)Application.Current.MainWindow).MainFrame.Navigate(new AuthorPage());
             }
-            catch (Exception ex) { MessageBox.Show($"✗ Ошибка: {ex.Message}"); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка сохранения: " + ex.Message);
+            }
         }
 
         private void Btn_Back(object s, RoutedEventArgs e)
         {
-            if (NavigationService?.CanGoBack == true) NavigationService.GoBack();
+            if (NavigationService != null && NavigationService.CanGoBack) NavigationService.GoBack();
         }
     }
 }
