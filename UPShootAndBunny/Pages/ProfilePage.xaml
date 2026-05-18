@@ -35,9 +35,9 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border Background="#FFFFFF" Padding="16" CornerRadius="12" Margin="0 0 0 12" Effect="{StaticResource DropShadow}">
-                                <StackPanel>
+                                <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Books.Title}" FontWeight="SemiBold" Foreground="#1C1C1E"/>
-                                    <TextBlock Text="{Binding ReviewText}" TextWrapping="Wrap" Margin="0 6 0 0" Foreground="#1C1C1E"/>
+                                    <TextBlock Text="{Binding Rating, StringFormat=' ★ {0}/10'}" Foreground="#FF9500" FontWeight="SemiBold" Margin="10 0 0 0"/>
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
