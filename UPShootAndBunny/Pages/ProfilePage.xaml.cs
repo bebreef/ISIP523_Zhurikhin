@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace UPShootAndBunny.Pages
 {
@@ -53,6 +54,81 @@ namespace UPShootAndBunny.Pages
             catch (Exception ex)
             {
                 MessageBox.Show("Ошибка профиля: " + ex.Message);
+            }
+        }
+
+        private void ReviewCard_Click(object s, MouseButtonEventArgs e)
+        {
+            try
+            {
+                var border = s as FrameworkElement;
+                if (border == null || border.Tag == null) return;
+
+                int bookId = Convert.ToInt32(border.Tag);
+                OpenBook(bookId);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка открытия книги: " + ex.Message);
+            }
+        }
+
+        private void OpenBook(int bookId)
+        {
+            var book = Core.Context.Books.Include("Users").Include("Genres").Include("Reviews").FirstOrDefault(b => b.BookId == bookId);
+            if (book == null)
+            {
+                MessageBox.Show("Книга не найдена");
+                return;
+            }
+
+            if (book.IsFrozen && App.CurrentUser.RoleId != 3)
+            {
+                MessageBox.Show("Книга временно недоступна");
+                return;
+            }
+
+            ((MainWindow)Application.Current.MainWindow).MainFrame.Navigate(new BookPage(book));
+        }
+
+        private void Btn_DisputeReview(object s, RoutedEventArgs e)
+        {
+            try
+            {
+                e.Handled = true;
+
+                var button = s as Button;
+                if (button == null || button.Tag == null) return;
+
+                int reviewId = Convert.ToInt32(button.Tag);
+                var review = Core.Context.Reviews.FirstOrDefault(r => r.ReviewId == reviewId && r.UserId == App.CurrentUser.UserId);
+                if (review == null)
+                {
+                    MessageBox.Show("Отзыв не найден");
+                    return;
+                }
+
+                if (!review.IsFrozen)
+                {
+                    MessageBox.Show("Этот отзыв не заморожен");
+                    LoadData();
+                    return;
+                }
+
+                bool exists = Core.Context.UnfreezeRequests.Any(r => r.UserId == App.CurrentUser.UserId && r.ReviewId == reviewId && r.Status == "Pending");
+                if (exists)
+                {
+                    MessageBox.Show("Заявка на разморозку этого отзыва уже ожидает рассмотрения");
+                    return;
+                }
+
+                Core.Context.UnfreezeRequests.Add(new UnfreezeRequests { UserId = App.CurrentUser.UserId, ReviewId = reviewId, Reason = "Прошу разморозить отзыв", Status = "Pending", CreatedAt = DateTime.Now });
+                Core.Context.SaveChanges();
+                MessageBox.Show("Заявка на разморозку отзыва отправлена");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка отправки заявки: " + ex.Message);
             }
         }
 
